@@ -5,7 +5,7 @@ Centralized configuration repository for Claude Code setup, including skills, pr
 ## Overview
 
 This repository contains:
-- **Claude Code Skills**: Installed and ready-to-use skills (code-reviewer, fetch-unresolved-comments)
+- **Claude Code Skills**: 26 installed and ready-to-use skills (design/UI, code quality, development tools, PR review)
 - **Profile Management**: Extensible shell functions for switching between Claude profiles
 - **Profile Configurations**: JSON files defining different Claude Code environments
 - **CLAUDE.md**: Global coding standards and project instructions
@@ -119,47 +119,104 @@ lcdh 10 "monitor PR"  # DHP, 10 min timeout, custom task
 
 ## Skills
 
-### Installed Skills
+### Installed Skills (26 Total)
 
-#### 1. code-reviewer
-**Purpose**: Comprehensive code review for pull requests and code quality audits
+All skills from `~/.claude/skills/` are included and organized by category:
 
-**Capabilities**:
-- Identifies bugs and logic errors
-- Detects security vulnerabilities (SQL injection, XSS, insecure deserialization)
-- Finds code smells and architectural issues
-- Detects N+1 queries and performance problems
-- Produces structured review reports
+#### Design & UI Skills (17)
 
-**Usage**:
+1. **adapt** - Adapt designs across screen sizes, devices, contexts, or platforms
+2. **animate** - Add purposeful animations, micro-interactions, and motion effects
+3. **audit** - Comprehensive interface quality audit (accessibility, performance, theming, responsive)
+4. **bolder** - Amplify safe or boring designs to be more visually interesting
+5. **clarify** - Improve unclear UX copy, error messages, microcopy, and labels
+6. **colorize** - Add strategic color to monochromatic interfaces
+7. **critique** - Evaluate design effectiveness from UX perspective (visual hierarchy, IA, emotional resonance)
+8. **delight** - Add moments of joy, personality, and unexpected touches
+9. **distill** - Strip designs to essence by removing unnecessary complexity
+10. **extract** - Extract reusable components and patterns into design system
+11. **frontend-design** - Create distinctive, production-grade interfaces with high design quality
+12. **normalize** - Normalize design to match design system for consistency
+13. **onboard** - Design or improve onboarding flows and first-time user experiences
+14. **optimize** - Improve interface performance (loading, rendering, animations, bundle size)
+15. **polish** - Final quality pass fixing alignment, spacing, consistency issues
+16. **quieter** - Tone down overly bold or visually aggressive designs
+17. **teach-impeccable** - One-time setup gathering design context for persistent guidelines
+
+#### Code Quality & Review Skills (3)
+
+18. **code-quality** - Comprehensive code quality guide (Clean Code, SOLID, DRY, CUPID, Coupling, Connascence, Code Smells)
+19. **code-reviewer** - Analyze code diffs for bugs, vulnerabilities (SQL injection, XSS), code smells, N+1 queries
+20. **react-best-practices** - React and Next.js performance optimization guidelines from Vercel Engineering
+
+#### Development Tools (5)
+
+21. **drawio** - AI-powered Draw.io diagram generation with Design System and real-time browser preview
+22. **emacs-elisp-debugging** - Strategies for debugging Emacs Lisp code and Common Lisp compatibility
+23. **find-skills** - Discover and install agent skills (use when looking for new functionality)
+24. **github-actions** - Comprehensive GitHub Actions examples (workflows, jobs, Docker, OIDC, deployment)
+25. **harden** - Improve interface resilience (error handling, i18n, text overflow, edge cases)
+
+#### PR/Review Skills (1)
+
+26. **fetch-unresolved-comments** - Fetch unresolved PR review comments via GitHub GraphQL API
+
+### Using Skills
+
+Skills are invoked using the `/` prefix in Claude Code:
+
 ```bash
-/code-reviewer
+# Design skills
+/frontend-design     # Create production-grade interface
+/audit              # Comprehensive interface audit
+/polish             # Final quality pass
+
+# Code quality
+/code-quality       # Apply Clean Code principles
+/code-reviewer      # Review PR for bugs/vulnerabilities
+/react-best-practices  # Optimize React/Next.js performance
+
+# Development tools
+/drawio             # Generate Draw.io diagrams
+/github-actions     # GitHub Actions examples
+/find-skills        # Discover more skills
+
+# PR management
+/fetch-unresolved-comments  # Get unresolved PR comments
 ```
 
-#### 2. fetch-unresolved-comments
-**Purpose**: GitHub PR review comment management
-
-**Capabilities**:
-- Fetches unresolved PR review comments via GitHub GraphQL API
-- Filters out resolved feedback automatically
-- Helps track outstanding review comments
-
-**Usage**:
-```bash
-/fetch-unresolved-comments
-```
+Skills are automatically available to Claude Code when working in projects.
 
 ### Updating Skills
 
-Skills are tracked via `skills-lock.json` which records source repositories:
+Skills in this repository are copied from `~/.claude/skills/` and tracked via `skills-lock.json` (for manually installed skills).
+
+**To update skills:**
 
 ```bash
 # Update all skills to latest versions
 pnpm dlx skills update
 
-# Or manually re-install a specific skill
-pnpm dlx add-skill <skill-url>
+# Install a new skill from repository
+pnpm dlx skills add <skill-url>
+
+# Copy updated skills to this repository
+cd ~/claude-setup
+for skill in ~/.claude/skills/*; do
+    skill_name=$(basename "$skill")
+    if [[ -d "$skill" ]] && [[ "$skill_name" != "dhp-environment-definition" ]]; then
+        rm -rf ".agents/skills/$skill_name"
+        cp -r "$skill" .agents/skills/
+    fi
+done
+
+# Commit and push
+git add .agents/skills/
+git commit -m "Update Claude Code skills"
+git push
 ```
+
+**Note**: The `dhp-environment-definition` skill is excluded from this repository per user configuration.
 
 ## Profile Configuration
 
@@ -332,9 +389,33 @@ pnpm dlx skills add <skill-url>
 ```
 claude-setup/
 ├── .agents/                    # Skills directory
-│   └── skills/
+│   └── skills/                 # 26 installed skills
+│       ├── adapt/
+│       ├── animate/
+│       ├── audit/
+│       ├── bolder/
+│       ├── clarify/
+│       ├── code-quality/
 │       ├── code-reviewer/
-│       └── fetch-unresolved-comments/
+│       ├── colorize/
+│       ├── critique/
+│       ├── delight/
+│       ├── distill/
+│       ├── drawio/
+│       ├── emacs-elisp-debugging/
+│       ├── extract/
+│       ├── fetch-unresolved-comments/
+│       ├── find-skills/
+│       ├── frontend-design/
+│       ├── github-actions/
+│       ├── harden/
+│       ├── normalize/
+│       ├── onboard/
+│       ├── optimize/
+│       ├── polish/
+│       ├── quieter/
+│       ├── react-best-practices/
+│       └── teach-impeccable/
 ├── .claude/                    # Claude symlinks
 │   └── skills/ -> ../.agents/skills/
 ├── profiles/                   # Profile configurations
