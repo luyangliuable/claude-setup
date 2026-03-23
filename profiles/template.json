@@ -1,0 +1,27 @@
+{
+    "permissions": {
+        "allow": ["WebFetch", "WebSearch"]
+    },
+    "skipWebFetchPreflight": true,
+    "env": {
+        "ANTHROPIC_BASE_URL": "https://api.anthropic.com",
+        "ANTHROPIC_MODEL": "claude-opus-4-6",
+        "NODE_TLS_REJECT_UNAUTHORIZED": "0",
+        "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "true",
+        "ANTHROPIC_SMALL_FAST_MODEL": "claude-haiku-4-5-20251001",
+        "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "true",
+        "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "18192"
+    },
+    "hooks": {},
+    "_metadata": {
+        "name": "Template",
+        "description": "Template for creating new Claude Code profiles",
+        "auth_token_env": "ANTHROPIC_API_KEY",
+        "notes": [
+            "Copy this file to create a new profile",
+            "Update ANTHROPIC_BASE_URL for custom API endpoints",
+            "Update ANTHROPIC_MODEL for different model versions",
+            "Set auth_token_env if using custom auth (e.g., OPENAI_API_KEY for GenAI Studio)"
+        ]
+    }
+}

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "code-reviewer": {
+      "source": "Jeffallan/claude-skills",
+      "sourceType": "github",
+      "computedHash": "74fef44bfb03c7ff3d8c366d8ee237621f0c0687aa5868d34d9c06a8ba062109"
+    },
+    "fetch-unresolved-comments": {
+      "source": "mlflow/mlflow",
+      "sourceType": "github",
+      "computedHash": "3554f49ca38b1e71d616a2ff2669cf2c8af5898ab743e83e1beb779b67dae22b"
+    }
+  }
+}
