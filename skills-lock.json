@@ -10,6 +10,11 @@
       "source": "mlflow/mlflow",
       "sourceType": "github",
       "computedHash": "3554f49ca38b1e71d616a2ff2669cf2c8af5898ab743e83e1beb779b67dae22b"
+    },
+    "list-models": {
+      "source": "local",
+      "sourceType": "custom",
+      "computedHash": "6656b5cb87387c995969f25c7f909f87eafa5830d2ea2b1799bf82f43414678b"
     }
   }
 }
