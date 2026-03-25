@@ -50,7 +50,7 @@ if [[ -z "$ANTHROPIC_API_KEY" ]] && [[ -z "$OPENAI_API_KEY" ]]; then
     echo "⚠  Warning: No API keys found in environment"
     echo "  Set ANTHROPIC_API_KEY or OPENAI_API_KEY in your .zshrc:"
     echo "  export ANTHROPIC_API_KEY='your-key-here'"
-    echo "  export OPENAI_API_KEY='your-key-here'  # For GenAI Studio"
+    echo "  export OPENAI_API_KEY='your-key-here'  # For OpenAI-compatible endpoints"
 else
     if [[ -n "$ANTHROPIC_API_KEY" ]]; then
         echo "✓ ANTHROPIC_API_KEY is set"
@@ -98,7 +98,7 @@ echo "=== Installation Complete ==="
 echo ""
 echo "Next steps:"
 echo "  1. Reload your shell: source ~/.zshrc"
-echo "  2. Try a command: cgs --version"
+echo "  2. Try a command: c --version"
 echo "  3. List profiles: claude-profile list"
 echo "  4. Add custom profile: claude-profile add my-custom"
 echo ""

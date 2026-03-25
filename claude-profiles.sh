@@ -128,7 +128,7 @@ _claude_load_profiles() {
         local profile_name=$(basename "$profile_file" .json)
 
         # Generate short command name (first 2 chars after 'c')
-        # e.g., genai-studio -> cgs, dhp-opus -> cdh, my-custom -> cmy
+        # e.g., profile-a -> cpa, profile-b -> cpb, my-custom -> cmy
         local short_name=$(echo "$profile_name" | sed 's/-//g' | cut -c1-2)
         local cmd_name="c${short_name}"
         local loop_cmd_name="l${cmd_name}"
@@ -252,7 +252,7 @@ claude-profile() {
             echo "Examples:"
             echo "  claude-profile list"
             echo "  claude-profile add my-custom"
-            echo "  claude-profile edit genai-studio"
+            echo "  claude-profile edit my-profile"
             ;;
     esac
 }

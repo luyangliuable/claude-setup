@@ -2,6 +2,39 @@
 
 Centralized configuration repository for Claude Code setup, including skills, profiles, and extensible profile management system.
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Quick Start](#quick-start)
+  - [Installation](#installation)
+  - [Source Profile Management](#source-profile-management)
+  - [Using Profiles](#using-profiles)
+- [Profile Management](#profile-management)
+  - [List Available Profiles](#list-available-profiles)
+  - [Create Custom Profile](#create-custom-profile)
+  - [Edit Existing Profile](#edit-existing-profile)
+  - [Remove Profile](#remove-profile)
+  - [Reload Profiles](#reload-profiles)
+- [Loop Commands](#loop-commands)
+- [Skills Management](#skills-management)
+  - [Installed Skills](#installed-skills)
+  - [Using Skills](#using-skills)
+  - [Installing Skills from GitHub](#installing-skills-from-github)
+  - [Creating Custom Skills](#creating-custom-skills)
+  - [Syncing Skills](#syncing-skills)
+  - [Updating Skills](#updating-skills)
+- [Profile Configuration](#profile-configuration)
+- [CLAUDE.md](#claudemd)
+- [Advanced Usage](#advanced-usage)
+  - [Custom System Prompt](#custom-system-prompt)
+  - [Environment-Specific Profiles](#environment-specific-profiles)
+  - [Model Flags](#model-flags)
+- [Security](#security)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [Repository Structure](#repository-structure)
+- [License](#license)
+
 ## Overview
 
 This repository contains:
@@ -9,16 +42,17 @@ This repository contains:
 - **Profile Management**: Extensible shell functions for switching between Claude profiles
 - **Profile Configurations**: JSON files defining different Claude Code environments
 - **CLAUDE.md**: Global coding standards and project instructions
+- **Skill Management System**: Install from GitHub, create custom skills, sync across codebase
 
 ## Quick Start
 
-### 1. Clone the Repository
+### Installation
 
 ```bash
 git clone https://github.com/luyangliuable/claude-config.git ~/claude-setup
 ```
 
-### 2. Source Profile Management in .zshrc
+### Source Profile Management
 
 Add this line to your `~/.zshrc`:
 
@@ -32,21 +66,21 @@ Then reload your shell:
 source ~/.zshrc
 ```
 
-### 3. Use Claude Profiles
+### Using Profiles
 
 ```bash
 # Default Claude (uses current environment)
 c
 
-# Claude via GenAI Studio (Sonnet default)
-cgs
-cgs -h    # Use Haiku model
-cgs -g    # Use GPT model
+# Profile A (example profile)
+cpa
+cpa -h    # Use Haiku model
+cpa -g    # Use GPT model
 
-# Claude via DHP (Opus default)
-cdh
-cdh -h    # Use Haiku model
-cdh -c    # Use Sonnet model
+# Profile B (example profile)
+cpb
+cpb -h    # Use Haiku model
+cpb -c    # Use Sonnet model
 ```
 
 ## Profile Management
@@ -61,12 +95,12 @@ Output:
 ```
 Available Claude profiles:
 
-  - genai-studio (cgs, lcgs)
-      API: https://your-api-endpoint.example.com
+  - profile-a (cpa, lcpa)
+      API: https://api.example.com
       Model: aipe-bedrock-claude-4-5-sonnet
 
-  - dhp-opus (cdh, lcdh)
-      API: https://api.dhp.example.com
+  - profile-b (cpb, lcpb)
+      API: https://api.other.com
       Model: claude-opus-4-6
 ```
 
@@ -87,7 +121,7 @@ lcmy 5 "task" # Loop mode with 5 min timeout
 ### Edit Existing Profile
 
 ```bash
-claude-profile edit genai-studio
+claude-profile edit my-profile
 ```
 
 ### Remove Profile
@@ -102,7 +136,7 @@ claude-profile remove my-custom
 claude-profile reload
 ```
 
-## Loop Commands (Continuous Tasks)
+## Loop Commands
 
 Loop commands run Claude in a continuous loop with automatic restart on completion:
 
@@ -110,16 +144,37 @@ Loop commands run Claude in a continuous loop with automatic restart on completi
 # Usage: l<profile> [timeout_minutes] ["task description"]
 
 lc                    # Default profile, 1 min timeout
-lcgs 5                # GenAI Studio, 5 min timeout
-lcdh 10 "monitor PR"  # DHP, 10 min timeout, custom task
+lcpa 5                # Profile A, 5 min timeout
+lcpb 10 "monitor PR"  # Profile B, 10 min timeout, custom task
 ```
 
 **Default Loop Task:**
 > Monitor the current PR using gh pr view. Run npm build, test, lint and format. Fix any failures and push. Use the code-quality skill when fixing code. Iterate until all checks pass.
 
-## Skills
+## Skills Management
 
-### Installed Skills (26 Total)
+This repository includes a comprehensive skill management system that allows you to:
+- Install skills from GitHub repositories
+- Create custom skills
+- Sync skills across the codebase
+- Track skill versions via `skills-lock.json`
+
+**Directory Structure:**
+```
+~/claude-setup/
+├── .agents/skills/          # Version-controlled skill definitions
+│   ├── code-reviewer/
+│   ├── list-models/        # Custom skill
+│   └── ...
+├── .claude/skills/          # Symlinks (not tracked in git)
+│   ├── code-reviewer -> ../../.agents/skills/code-reviewer
+│   └── ...
+├── add-skill.sh            # Install skill from GitHub
+├── sync-skills.sh          # Sync all skills
+└── skills-lock.json        # Track skill sources and versions
+```
+
+### Installed Skills
 
 All skills from `~/.claude/skills/` are included and organized by category:
 
@@ -187,9 +242,85 @@ Skills are invoked using the `/` prefix in Claude Code:
 
 Skills are automatically available to Claude Code when working in projects.
 
+### Installing Skills from GitHub
+
+Install a new skill from a GitHub repository:
+
+```bash
+cd ~/claude-setup
+./add-skill.sh <github-url>
+
+# Example:
+./add-skill.sh https://github.com/openclaw/openclaw/tree/HEAD/skills/slack
+```
+
+This script will:
+1. Install globally via `pnpm dlx skills add`
+2. Copy to `.agents/skills/`
+3. Create symlink in `.claude/skills/`
+4. Update `skills-lock.json`
+5. Commit to git
+
+### Creating Custom Skills
+
+Create your own custom skill:
+
+```bash
+cd ~/claude-setup
+mkdir -p .agents/skills/my-skill
+nano .agents/skills/my-skill/SKILL.md
+
+# Add content following the SKILL.md format:
+# ---
+# name: my-skill
+# description: What this skill does
+# license: MIT
+# allowed-tools: Read, Grep, Bash
+# metadata:
+#   author: your-name
+#   version: "1.0.0"
+#   domain: category
+#   triggers: keywords, trigger, phrases
+# ---
+#
+# # Skill Name
+#
+# ## When to Use
+# - Use case 1
+# - Use case 2
+#
+# ## Instructions
+# What Claude should do.
+
+# Create symlink
+./sync-skills.sh
+
+# Update skills-lock.json
+HASH=$(shasum -a 256 .agents/skills/my-skill/SKILL.md | cut -d' ' -f1)
+# Add entry to skills-lock.json manually or via jq
+
+# Commit
+git add .agents/skills/my-skill skills-lock.json
+git commit -m "Add my-skill custom skill"
+```
+
+**Available Custom Skills:**
+- **list-models** - Query API endpoints to list available models (OpenAI, LiteLLM, GenAI Studio)
+
+### Syncing Skills
+
+After cloning or pulling changes, sync skills to create symlinks:
+
+```bash
+cd ~/claude-setup
+./sync-skills.sh
+```
+
+This creates symlinks for all skills in `.agents/skills/`.
+
 ### Updating Skills
 
-Skills in this repository are copied from `~/.claude/skills/` and tracked via `skills-lock.json` (for manually installed skills).
+Skills in this repository are copied from `~/.claude/skills/` and tracked via `skills-lock.json`.
 
 **To update skills:**
 
@@ -204,7 +335,7 @@ pnpm dlx skills add <skill-url>
 cd ~/claude-setup
 for skill in ~/.claude/skills/*; do
     skill_name=$(basename "$skill")
-    if [[ -d "$skill" ]] && [[ "$skill_name" != "dhp-environment-definition" ]]; then
+    if [[ -d "$skill" ]]; then
         rm -rf ".agents/skills/$skill_name"
         cp -r "$skill" .agents/skills/
     fi
@@ -216,7 +347,12 @@ git commit -m "Update Claude Code skills"
 git push
 ```
 
-**Note**: The `dhp-environment-definition` skill is excluded from this repository per user configuration.
+**Best Practices:**
+- Always use `add-skill.sh` and `sync-skills.sh` scripts instead of manual commands
+- Track skill sources in `skills-lock.json` for reproducibility
+- Use relative symlinks for portability across systems
+- Version control `.agents/skills/` directory
+- Don't commit `.claude/skills/` (symlinks are recreated by sync script)
 
 ## Profile Configuration
 
@@ -282,7 +418,7 @@ claude-profile reload
 Create `.local.json` profiles for machine-specific configurations (automatically ignored by git):
 
 ```bash
-cp profiles/genai-studio.json profiles/genai-studio.local.json
+cp profiles/profile-a.json profiles/profile-a.local.json
 # Edit .local.json with machine-specific settings
 ```
 
@@ -295,8 +431,8 @@ All profile commands support model flags:
 - `-g`: Use GPT model (for compatible profiles)
 
 ```bash
-cgs -h          # GenAI Studio with Haiku
-cdh -c          # DHP with Sonnet
+cpa -h          # Profile A with Haiku
+cpb -c          # Profile B with Sonnet
 cmy -h          # Custom profile with Haiku
 ```
 
@@ -307,8 +443,9 @@ cmy -h          # Custom profile with Haiku
 - Profiles use environment variables for authentication
 - API tokens should be set in your shell environment (.zshrc, .bashrc)
 - `.gitignore` excludes `*.local.json` files for machine-specific configs
-- For GenAI Studio, set `OPENAI_API_KEY` environment variable
-- For other endpoints, set `ANTHROPIC_API_KEY`
+- Set appropriate environment variables:
+  - `OPENAI_API_KEY` for OpenAI-compatible endpoints
+  - `ANTHROPIC_API_KEY` for Anthropic endpoints
 
 ## Troubleshooting
 
@@ -346,6 +483,29 @@ To reinstall skills:
 ```bash
 cd ~/claude-setup
 pnpm dlx skills add <skill-url>
+```
+
+### Symlinks Not Working
+
+```bash
+cd ~/claude-setup
+./sync-skills.sh
+```
+
+### Skill Not Appearing
+
+1. Check `.agents/skills/<name>/SKILL.md` exists
+2. Run `./sync-skills.sh`
+3. Restart Claude session
+
+### Update Skill from GitHub
+
+```bash
+pnpm dlx skills add <github-url>  # Re-install
+cp -r ~/.claude/skills/<name> ~/claude-setup/.agents/skills/
+./sync-skills.sh
+git add .agents/skills/<name> skills-lock.json
+git commit -m "Update <name> skill"
 ```
 
 ## Contributing
@@ -409,6 +569,7 @@ claude-setup/
 │       ├── frontend-design/
 │       ├── github-actions/
 │       ├── harden/
+│       ├── list-models/         # Custom skill
 │       ├── normalize/
 │       ├── onboard/
 │       ├── optimize/
@@ -419,10 +580,12 @@ claude-setup/
 ├── .claude/                    # Claude symlinks
 │   └── skills/ -> ../.agents/skills/
 ├── profiles/                   # Profile configurations
-│   ├── genai-studio.json
-│   ├── dhp-opus.json
-│   └── template.json
+│   ├── profile-a.json          # Example profile
+│   ├── profile-b.json          # Example profile
+│   └── template.json           # Profile template
 ├── claude-profiles.sh          # Profile management script
+├── add-skill.sh                # Install skill from GitHub
+├── sync-skills.sh              # Sync skills (create symlinks)
 ├── install.sh                  # Installation script
 ├── skills-lock.json            # Skill source tracking
 ├── CLAUDE.md -> ~/CLAUDE.md    # Global coding standards (symlink)
