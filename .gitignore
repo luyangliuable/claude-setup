@@ -5,7 +5,9 @@ node_modules/
 *.key
 *.token
 *.secret
-profiles/*local.json
+# Profile configurations (sensitive - only template should be tracked)
+profiles/*.json
+!profiles/template.json
 
 # OS files
 .DS_Store
