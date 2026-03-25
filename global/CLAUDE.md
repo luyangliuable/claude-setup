@@ -20,9 +20,9 @@ Deliverables: Start with a brief executive summary, then provide the full soluti
 Style: Be concise, structured, and decisive. Explicitly flag uncertainty. No fluff or filler.
 Iteration: If the task is large, deliver in increments and confirm next steps. Do not stop until the task is fully complete or I confirm acceptance.
 
-**⚠️ NEVER COMMIT THIS FILE - LOCAL REFERENCE ONLY ⚠️**
+**NEVER COMMIT THIS FILE - LOCAL REFERENCE ONLY**
 
-## ⚠️ CRITICAL: NO AI ATTRIBUTION ⚠️
+## CRITICAL: NO AI ATTRIBUTION
 **Absolute Prohibitions:**
 - NO Claude/AI mentions in commits, code, or messages
 - NO "Generated with Claude" or "Co-Authored-By: Claude"
@@ -68,7 +68,7 @@ Iteration: If the task is large, deliver in increments and confirm next steps. D
 
 # SonarQube
 **NEVER create sonar-project.properties** - causes indexing conflicts
-Use auto-detection following ~/dep-xena patterns
+Use auto-detection following project patterns
 
 # Testing (MANDATORY before commits)
 1. Run unit tests: `python -m pytest tests/unit/ -v`
@@ -151,7 +151,7 @@ Format:
 - If pipelines fail, fix issues and push again
 - Never complete task with failing pipelines
 
-# ECS Deployment Flow (InsightsPal)
+# ECS Deployment Flow
 **Complete flow from code change to production deployment:**
 
 ## 1. Pre-Deployment Verification
@@ -171,19 +171,19 @@ npm run build   # Build must succeed
 - Dockerfile copies node_modules to release stage - missing deps cause runtime failures
 
 ## 3. Docker Build (GitHub Actions)
-**Workflow:** `deploy-insightspal-app-docker-image.yml`
+**Workflow:** `deploy-app-docker-image.yml`
 
 ```bash
 # Trigger build:
-gh workflow run deploy-insightspal-app-docker-image.yml \
+gh workflow run deploy-app-docker-image.yml \
   -f feature_image_tag=0.1.4 \
-  -f branch=feature/I7-186-user-auth
+  -f branch=feature/TICKET-123-description
 
 # Monitor build:
 gh run watch
 
 # List recent builds:
-gh run list --workflow=deploy-insightspal-app-docker-image.yml --limit 5
+gh run list --workflow=deploy-app-docker-image.yml --limit 5
 
 # View build logs:
 gh run view <run_id> --log
@@ -195,14 +195,14 @@ gh run view <run_id> --log
 - Workflow name collision - Use exact filename, not display name
 
 ## 4. ECS Deployment (GitHub Actions)
-**Workflow:** `deploy-insightspal-app-ecs.yml`
+**Workflow:** `deploy-app-ecs.yml`
 
 ```bash
 # Trigger deployment (after Docker build succeeds):
-gh workflow run deploy-insightspal-app-ecs.yml \
+gh workflow run deploy-app-ecs.yml \
   -f environment=dev \
   -f image_tag=0.1.4 \
-  -f branch=feature/I7-186-user-auth
+  -f branch=feature/TICKET-123-description
 
 # Monitor deployment:
 gh run watch
@@ -238,16 +238,16 @@ gh run watch
 ## 6. Verification (CloudWatch Logs)
 ```bash
 # View ECS container logs:
-aws logs tail /ecs/insightspal-app-dev --follow --since 1h
+aws logs tail /ecs/app-name-env --follow --since 1h
 
 # Or via AWS Console:
-# ECS → Clusters → insightspal-dev → Services → insightspal-app-dev
+# ECS → Clusters → cluster-name-env → Services → app-name-env
 # → Tasks → (click running task) → Logs tab
 ```
 
 **Look for in logs:**
 - "Running Drizzle migrations..."
-- "Reading config file '/insightspal/drizzle.config.ts'" (no "Cannot find module" errors)
+- "Reading config file '/app-directory/drizzle.config.ts'" (no "Cannot find module" errors)
 - "Using dialect postgresql"
 - "Pushing changes to database"
 - Migration success messages
@@ -260,17 +260,17 @@ aws logs tail /ecs/insightspal-app-dev --follow --since 1h
 - Container exit code 1 - Check full logs for error
 
 ## 7. Workflow Parameter Reference
-**deploy-insightspal-app-docker-image.yml:**
+**deploy-app-docker-image.yml:**
 - `feature_image_tag` (NOT "tag") - Docker image version
 - `branch` - Git branch to build from
 
-**deploy-insightspal-app-ecs.yml:**
+**deploy-app-ecs.yml:**
 - `environment` - dev/prod
 - `image_tag` - Must match Docker image tag
 - `branch` - Git branch reference
 
 # Task Tool
-**⚠️ CRITICAL: NEVER USE EXPLORE() ⚠️**
+**CRITICAL: NEVER USE EXPLORE()**
 - **NEVER use Task tool with subagent_type='Explore'**
 - **NEVER call Explore() function - causes API errors**
 - **ALWAYS use direct tools instead:**
@@ -289,7 +289,7 @@ aws logs tail /ecs/insightspal-app-dev --follow --since 1h
 # Python Packages
 **Always use internal PyPI:**
 ```bash
-pip install -i https://artifactory.internal.cba/api/pypi/org.python.pypi/simple [package]
+pip install -i https://your-internal-pypi-repo/api/pypi/org.python.pypi/simple [package]
 ```
 **Always use virtual environments**
 
@@ -307,7 +307,7 @@ For every issue resolved:
 
 # PR Review Standards
 **MANDATORY: Before performing PR reviews, reference ~/pr_review_example.json**
-- Review actual examples from team reviewers (Thomas-Kong_cba, Kenisa-Bangera_cba)
+- Review actual examples from team reviewers
 - Follow established review patterns and coding standards
 - Key patterns to check:
   - **Code Quality:**
@@ -340,7 +340,7 @@ For every issue resolved:
     - Be flexible on implementation as long as consistency is maintained
 - Use "LGTM" with clear summary in approval comments
 
-# Team Coding Conventions (InsightsPal)
+# Team Coding Conventions
 **Conventions established from PR reviews:**
 - **Absolute imports over relative imports** - Use `@/` path alias instead of `./` or `../`
 - **No TODO comments** - SonarQube flags these as tech debt
@@ -418,7 +418,7 @@ For every issue resolved:
    - Keep colors in theme-colors.cjs (single source of truth)
    - Import into tailwind.config.js: `colors: themeColors`
 
-# InsightsPal UI - Project Instructions
+# Project-Specific Instructions
 
 ## Pre-Push Checklist (MANDATORY)
 
@@ -497,13 +497,13 @@ Notes:
 
 ### Users
 
-InsightsPal serves data analysts, data scientists, and business users at Commonwealth Bank of Australia who need to analyze data and generate insights through conversational AI interaction. Users operate in a professional banking context where accuracy, reliability, and efficiency are paramount. Their primary job is to extract actionable insights from complex data quickly and confidently.
+Your application serves data analysts, data scientists, and business users who need to analyze data and generate insights through conversational AI interaction. Users operate in a professional context where accuracy, reliability, and efficiency are paramount. Their primary job is to extract actionable insights from complex data quickly and confidently.
 
 ### Brand Personality
 
 **Professional, Intelligent, Modern, Trustworthy**
 
-InsightsPal embodies enterprise-grade polish and corporate professionalism while maintaining contemporary design standards. The interface demonstrates intelligence through clear information hierarchy, thoughtful component design, and smart interaction patterns. As a trusted CBA tool, it prioritizes reliability, security, and dependability in every design decision.
+Your application embodies enterprise-grade polish and corporate professionalism while maintaining contemporary design standards. The interface demonstrates intelligence through clear information hierarchy, thoughtful component design, and smart interaction patterns. As a trusted tool, it prioritizes reliability, security, and dependability in every design decision.
 
 ### Aesthetic Direction
 
@@ -515,14 +515,14 @@ InsightsPal embodies enterprise-grade polish and corporate professionalism while
 
 **Color Foundation:**
 
-- Primary: CBA Navy Blue (#002c5f) - Authority, trust, corporate identity
-- Accent: CBA Yellow (#ffd100) - Attention, energy, brand recognition
+- Primary: Primary Brand Color (#002c5f) - Authority, trust, corporate identity
+- Accent: Accent Brand Color (#ffd100) - Attention, energy, brand recognition
 - Semantic colors: Success (green), Warning (amber), Error (red) with comprehensive 50-900 scales
-- Lumen Design System integration for consistent CBA brand adherence
+- Design system integration for consistent brand adherence
 
 **Typography:**
 
-- CBA Beacon Sans as primary brand font
+- Your brand font as primary typeface
 - System font fallbacks for performance and reliability
 - Clear hierarchy through font weights and sizes
 
@@ -546,7 +546,7 @@ Design for accuracy and confidence. Use consistent spacing, precise alignment, p
 Apply thoughtful details where they improve usability or reduce cognitive load. Subtle animations for state transitions, soft shadows for depth perception, and backdrop blur for focus management all serve user goals.
 
 **4. Enterprise Consistency**
-Maintain CBA brand standards through Lumen Design System tokens, CBA Beacon Sans typography, and corporate color palette. Every component should feel part of the CBA ecosystem while serving InsightsPal's specific purpose.
+Maintain brand standards through your design system tokens, brand typography, and corporate color palette. Every component should feel part of the ecosystem while serving the application's specific purpose.
 
 **5. Performance & Accessibility**
 Design decisions must never compromise speed or accessibility. Prefer system fonts, optimize animations, maintain WCAG standards, and ensure keyboard navigation works flawlessly throughout the interface.

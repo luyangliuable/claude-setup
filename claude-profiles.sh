@@ -40,9 +40,9 @@ _claude_profile_exec() {
         shift
     fi
 
-    # Check if profile requires auth token override (e.g., GenAI Studio)
+    # Check if profile requires auth token override (e.g., custom API endpoints)
     local auth_override=""
-    if grep -q "api.studio.genai.cba" "$profile_file" 2>/dev/null; then
+    if grep -q "your-api-endpoint.example.com" "$profile_file" 2>/dev/null; then
         auth_override="ANTHROPIC_AUTH_TOKEN=\"\$OPENAI_API_KEY\" "
     fi
 
@@ -71,7 +71,7 @@ _claude_loop_exec() {
 
     # Check if profile requires auth token override
     local auth_override=""
-    if grep -q "api.studio.genai.cba" "$profile_file" 2>/dev/null; then
+    if grep -q "your-api-endpoint.example.com" "$profile_file" 2>/dev/null; then
         auth_override="ANTHROPIC_AUTH_TOKEN=\"\$OPENAI_API_KEY\" "
     fi
 

@@ -38,3 +38,6 @@ yarn-error.log*
 *.tmp
 tmp/
 temp/
+
+# Local documentation (not to be tracked)
+FIX_SUMMARY.md

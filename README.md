@@ -62,7 +62,7 @@ Output:
 Available Claude profiles:
 
   - genai-studio (cgs, lcgs)
-      API: https://api.studio.genai.cba
+      API: https://your-api-endpoint.example.com
       Model: aipe-bedrock-claude-4-5-sonnet
 
   - dhp-opus (cdh, lcdh)
