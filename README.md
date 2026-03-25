@@ -25,6 +25,8 @@ Centralized configuration repository for Claude Code setup, including skills, pr
   - [Updating Skills](#updating-skills)
 - [Profile Configuration](#profile-configuration)
 - [CLAUDE.md](#claudemd)
+- [Rules System](#rules-system)
+- [Promptbank](#promptbank)
 - [Advanced Usage](#advanced-usage)
   - [Custom System Prompt](#custom-system-prompt)
   - [Environment-Specific Profiles](#environment-specific-profiles)
@@ -388,14 +390,155 @@ Profiles are JSON files in `profiles/` directory with this structure:
 
 ## CLAUDE.md
 
-The `CLAUDE.md` file (symlink to `~/CLAUDE.md`) contains:
-- Global coding standards and conventions
-- Project instructions and guidelines
-- Team-specific best practices
-- Bug resolution processes
-- Testing standards
+The `CLAUDE.md` file contains global coding standards and conventions that apply across ALL projects.
+
+### Structure
+
+```
+~/CLAUDE.md (symlink) → ~/claude-setup/global/CLAUDE.md (master file)
+```
+
+### Why This Structure?
+
+- **Avoids confusion** with project-specific CLAUDE.md files
+- **Single source of truth** for global config
+- **Easy to edit** via symlink at ~/CLAUDE.md
+- **Organized** under claude-setup folder
+
+### Project-Specific vs Global
+
+- **Global** (`~/claude-setup/global/CLAUDE.md`): System-wide rules (testing, commit standards, etc.)
+- **Project** (`<project>/CLAUDE.md`): Project-specific instructions (architecture, conventions, etc.)
+- Claude loads BOTH - project config takes precedence over global config
+
+### Content
+
+The minimal `CLAUDE.md` provides essential cross-cutting concerns and pointers to detailed rules in `global/rules/`:
+
+- Core principles and working philosophy
+- Critical reminders (NO AI attribution, git safety)
+- Pre-push verification requirements
+- Bug management workflow
+- GitHub Actions monitoring
 
 This file is automatically loaded by Claude Code in all projects.
+
+## Rules System
+
+Detailed rules are organized modularly in `global/rules/` for better maintainability.
+
+### Directory Structure
+
+```
+global/rules/
+├── core/               # Working philosophy, core instructions, library usage
+├── code-quality/       # AI attribution, commenting, team conventions, clean code
+├── react-patterns/     # Performance principles reference
+├── testing/            # Pre-push verification, unit tests, test organization
+├── git/                # Commit standards, safety, PR reviews, version management
+├── deployment/         # GitHub Actions, ECS deployment flow
+├── bug-management/     # Bug resolution process, database, documentation
+├── workflow/           # Task completion, SonarQube, task tool
+└── tech-specific/      # Tailwind, Python, design context
+```
+
+### Accessing Rules
+
+Rules are automatically loaded via symlink:
+
+```
+~/.claude/rules/global → ~/claude-setup/global/rules
+```
+
+Created automatically by `install.sh` via `setup-rules.sh`.
+
+### Rule Categories
+
+- **Core** (3 files): Working philosophy, core instructions, library usage
+- **Code Quality** (5 files): NO AI attribution, commenting conventions, team conventions, clean code principles, universal principles reference
+- **React Patterns** (1 file): Performance principles reference pointing to react-best-practices skill
+- **Testing** (3 files): Pre-push verification, unit test standards, test file organization
+- **Git** (8 files): Commit standards, git safety, version management, PR review standards (quality, workflow, organization, etiquette), PR suggestion fixes
+- **Deployment** (7 files): GitHub Actions, ECS pre-deployment, dependencies, Docker build, service deployment, runtime migrations, verification, workflow parameters
+- **Bug Management** (3 files): Bug resolution process, bug database, bug documentation
+- **Workflow** (3 files): Task completion, SonarQube, task tool
+- **Tech-Specific** (7 files): Tailwind config, OpenAI Codex config, Python packages, design users, brand personality, aesthetic, principles
+
+**Total: 40 modular rule files**
+
+## Promptbank
+
+Quick access to common patterns and templates for Claude Code workflows via the `pb` command.
+
+### Usage
+
+**Interactive Mode (Easiest):**
+```bash
+pb                   # Shows numbered selection menu - no need to remember paths!
+# 1. git/commit-message
+# 2. git/pr-description
+# ...
+# Enter number: 1
+# ✓ Copied 'git/commit-message' to clipboard
+```
+
+**Direct Commands:**
+```bash
+pb list              # List all available prompts
+pb show <name>       # Display prompt content
+pb copy <name>       # Copy prompt to clipboard (pbcopy)
+pb edit <name>       # Open prompt in $EDITOR
+```
+
+### Available Templates (17 total)
+
+**Git Workflows:**
+- `git/commit-message` - Single-line commit message template
+- `git/pr-description` - Pull request description template
+- `git/branch-workflow` - Common git branch commands
+
+**Testing:**
+- `testing/test-boilerplate` - Vitest test structure (Arrange/Act/Assert)
+- `testing/coverage-request` - Commands for running tests with coverage
+- `testing/pre-push-checklist` - Pre-push verification for all languages
+
+**Code Review:**
+- `code-review/review-checklist` - Comprehensive PR review checklist
+- `code-review/lgtm-template` - Approval comment template
+- `code-review/nitpick-template` - Minor suggestion template
+
+**Debugging:**
+- `debugging/error-analysis` - Bug report template
+- `debugging/rca-template` - Root cause analysis template
+- `debugging/common-commands` - Common debugging commands
+
+**Workflow & Quality:**
+- `workflow/clean-solution` - Ensure clean, robust, and simple solutions
+- `workflow/thorough-exploration` - Explore codebase thoroughly before changes
+- `workflow/concise-plan` - Guidelines for concise plan creation
+- `workflow/pipeline-monitoring` - Monitor GitHub Actions until all pass
+- `workflow/use-skills` - Invoke appropriate agent skills for tasks
+
+### Examples
+
+```bash
+# Interactive mode (easiest)
+pb
+
+# Copy commit message template
+pb copy git/commit-message
+
+# View test boilerplate
+pb show testing/test-boilerplate
+
+# Copy workflow quality prompt
+pb copy workflow/clean-solution
+
+# Edit custom template
+pb edit git/pr-description
+```
+
+See `promptbank/README.md` for detailed usage.
 
 ## Advanced Usage
 
@@ -552,43 +695,47 @@ claude-setup/
 │   └── skills/                 # 26 installed skills
 │       ├── adapt/
 │       ├── animate/
-│       ├── audit/
-│       ├── bolder/
-│       ├── clarify/
 │       ├── code-quality/
 │       ├── code-reviewer/
-│       ├── colorize/
-│       ├── critique/
-│       ├── delight/
-│       ├── distill/
-│       ├── drawio/
-│       ├── emacs-elisp-debugging/
-│       ├── extract/
-│       ├── fetch-unresolved-comments/
-│       ├── find-skills/
 │       ├── frontend-design/
-│       ├── github-actions/
-│       ├── harden/
-│       ├── list-models/         # Custom skill
-│       ├── normalize/
-│       ├── onboard/
-│       ├── optimize/
-│       ├── polish/
-│       ├── quieter/
+│       ├── list-models/        # Custom skill
 │       ├── react-best-practices/
-│       └── teach-impeccable/
+│       └── ...
 ├── .claude/                    # Claude symlinks
 │   └── skills/ -> ../.agents/skills/
+├── global/                     # Global configuration
+│   ├── CLAUDE.md               # Minimal global config (master file)
+│   ├── rules/                  # Modular rule files (40 files)
+│   │   ├── core/               # Working philosophy, instructions
+│   │   ├── code-quality/       # AI attribution, commenting, clean code
+│   │   ├── react-patterns/     # Performance principles reference
+│   │   ├── testing/            # Pre-push, unit tests, organization
+│   │   ├── git/                # Commit, safety, PR reviews
+│   │   ├── deployment/         # GitHub Actions, ECS
+│   │   ├── bug-management/     # Bug resolution, database
+│   │   ├── workflow/           # Task completion, SonarQube
+│   │   └── tech-specific/      # Tailwind, Python, design
+│   └── snapshots/              # CLAUDE.md backups
+├── promptbank/                 # Common templates (17 files)
+│   ├── git/                    # commit-message, pr-description, branch-workflow
+│   ├── testing/                # test-boilerplate, coverage-request, pre-push-checklist
+│   ├── code-review/            # review-checklist, lgtm-template, nitpick-template
+│   ├── debugging/              # error-analysis, rca-template, common-commands
+│   ├── workflow/               # clean-solution, thorough-exploration, concise-plan, pipeline-monitoring, use-skills
+│   └── README.md
 ├── profiles/                   # Profile configurations
-│   ├── profile-a.json          # Example profile
-│   ├── profile-b.json          # Example profile
-│   └── template.json           # Profile template
+│   ├── profile-a.json
+│   ├── profile-b.json
+│   └── template.json
 ├── claude-profiles.sh          # Profile management script
+├── claude-promptbank.sh        # Promptbank CLI (pb command)
 ├── add-skill.sh                # Install skill from GitHub
 ├── sync-skills.sh              # Sync skills (create symlinks)
+├── setup-rules.sh              # Setup global rules symlink
 ├── install.sh                  # Installation script
 ├── skills-lock.json            # Skill source tracking
-├── CLAUDE.md -> ~/CLAUDE.md    # Global coding standards (symlink)
+├── ~/CLAUDE.md -> global/CLAUDE.md    # Symlink to global config
+├── ~/.claude/rules/global -> global/rules/  # Symlink to rules
 ├── .gitignore
 └── README.md
 ```

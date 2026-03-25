@@ -1,0 +1,7 @@
+Create new branch from current commit:
+
+git checkout -b feature/TICKET-123-descriptive-name
+
+Push branch and set upstream:
+
+git push -u origin feature/TICKET-123-descriptive-name

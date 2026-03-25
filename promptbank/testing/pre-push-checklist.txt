@@ -1,0 +1,24 @@
+Pre-push verification checklist:
+
+JavaScript/TypeScript:
+[ ] npm test (all tests pass)
+[ ] npm run lint (no errors)
+[ ] npm run format (code formatted)
+[ ] npm run build (build succeeds)
+
+Python:
+[ ] pytest (all tests pass)
+[ ] ruff check (linting passes)
+[ ] ruff format (code formatted)
+
+Rust:
+[ ] cargo test (all tests pass)
+[ ] cargo clippy (linting passes)
+[ ] cargo fmt --check (code formatted)
+[ ] cargo build --release (build succeeds)
+
+Go:
+[ ] go test ./... (all tests pass)
+[ ] golangci-lint run (linting passes)
+[ ] go fmt ./... (code formatted)
+[ ] go build (build succeeds)

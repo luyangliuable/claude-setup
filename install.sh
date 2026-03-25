@@ -83,6 +83,11 @@ else
     echo "⚠  Warning: No skills directory found"
 fi
 
+# Setup global rules symlink
+echo ""
+echo "Setting up global rules..."
+"${INSTALL_DIR}/setup-rules.sh"
+
 # Load profiles
 echo ""
 echo "Loading profiles..."

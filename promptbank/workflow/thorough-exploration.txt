@@ -1,0 +1,9 @@
+Explore the entire codebase thoroughly before making changes:
+
+1. Search for existing implementations of similar functionality
+2. Identify patterns and conventions used throughout the codebase
+3. Check for utilities/helpers that can be reused
+4. Verify changes won't break existing code
+5. Ensure no duplication of logic
+
+Use: Glob, Grep, Read tools extensively to understand context

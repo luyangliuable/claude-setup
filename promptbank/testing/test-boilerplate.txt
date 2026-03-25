@@ -1,0 +1,33 @@
+import { describe, it, expect, vi } from 'vitest';
+
+describe('[ComponentName]', () => {
+  it('handles successful case', () => {
+    // Arrange
+    const input = /* setup */;
+
+    // Act
+    const result = functionUnderTest(input);
+
+    // Assert
+    expect(result).toBe(/* expected */);
+  });
+
+  it('handles error case when input is invalid', () => {
+    // Arrange
+    const invalidInput = /* setup */;
+
+    // Act & Assert
+    expect(() => functionUnderTest(invalidInput)).toThrow();
+  });
+
+  it('handles edge case with empty data', () => {
+    // Arrange
+    const emptyInput = /* setup */;
+
+    // Act
+    const result = functionUnderTest(emptyInput);
+
+    // Assert
+    expect(result).toEqual(/* expected */);
+  });
+});

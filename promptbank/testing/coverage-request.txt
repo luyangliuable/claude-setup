@@ -1,0 +1,11 @@
+Run tests with coverage report:
+
+npm test -- --coverage
+
+View coverage for specific file:
+
+npm test -- --coverage path/to/file.test.ts
+
+Aim for 70% minimum line coverage per file.
+Focus on: business logic, edge cases, error handling, state transitions.
+Skip: visual styling, static text, simple prop passing.

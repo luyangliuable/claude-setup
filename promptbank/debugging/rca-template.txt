@@ -1,0 +1,34 @@
+## Root Cause Analysis
+
+### Problem
+[Brief description of the bug]
+
+### Symptoms
+- [Observable symptom 1]
+- [Observable symptom 2]
+
+### Root Cause
+[Detailed explanation of the underlying cause]
+
+### Why It Happened
+[Explanation of how this bug was introduced]
+
+### Solution
+[Description of the fix applied]
+
+### Code Changes
+```
+[Relevant code snippet showing before/after]
+```
+
+### Prevention
+- [Preventive measure 1]
+- [Preventive measure 2]
+- [Preventive measure 3]
+
+### Testing
+- [How to verify the fix]
+- [Regression tests added]
+
+### Related Issues
+- [Link to similar bugs or related tickets]

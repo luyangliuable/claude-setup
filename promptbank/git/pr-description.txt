@@ -1,0 +1,24 @@
+## Summary
+
+This PR updates [component/feature] to [brief description of changes].
+
+**Key Changes:**
+- Added [feature/fix 1]
+- Updated [feature/fix 2]
+- Removed [deprecated code/feature]
+
+## Technical Details
+
+[Provide context about implementation approach, architectural decisions, or technical considerations]
+
+## Testing
+
+- [ ] Unit tests added/updated
+- [ ] Integration tests pass
+- [ ] Manual testing completed
+- [ ] Edge cases covered
+
+## Related
+
+- Resolves #[issue-number]
+- Part of [epic/project name]

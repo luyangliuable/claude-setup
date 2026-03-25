@@ -1,0 +1,27 @@
+## Code Quality
+[ ] Absolute imports used (not relative)
+[ ] Nullish coalescing (??) used for defaults (not ||)
+[ ] No TODO comments
+[ ] Native HTML elements for accessibility
+[ ] No unused mocks in tests
+[ ] Test descriptions are complete sentences
+[ ] Error handling with try/catch and logging included
+
+## Workflow Quality
+[ ] Workflow triggers cover relevant branches (main, develop)
+[ ] No redundant configurations
+[ ] Placeholders used (not personal identifiers)
+[ ] Default values explained (no magic constants)
+[ ] Sandpit environment for testing (not production)
+
+## Organization
+[ ] Follows established file organization patterns
+[ ] Consistent naming conventions
+[ ] Clear .env.example descriptions
+[ ] README structure matches similar modules
+
+## Testing
+[ ] 70% minimum coverage achieved
+[ ] Tests focus on logic/edge cases (not styling)
+[ ] No redundant/trivial tests
+[ ] <5s execution per test file

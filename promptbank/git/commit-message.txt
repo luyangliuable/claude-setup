@@ -1,0 +1,5 @@
+Update component to handle edge case in validation logic
+
+- Improves error handling for null inputs
+- Adds validation for empty arrays
+- Ensures consistent behavior across all scenarios

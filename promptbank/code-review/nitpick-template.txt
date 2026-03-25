@@ -1,0 +1,12 @@
+**Nitpick:** [Minor suggestion]
+
+Consider [specific improvement]. This would [benefit].
+
+Example:
+```
+[code example showing suggested change]
+```
+
+Reference: [link to documentation/style guide if applicable]
+
+Not blocking - feel free to address in a follow-up if you prefer.

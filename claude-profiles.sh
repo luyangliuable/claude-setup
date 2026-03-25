@@ -259,3 +259,6 @@ claude-profile() {
 
 # Initialize: Load all profiles on startup
 _claude_load_profiles
+
+# Promptbank alias
+alias pb="${HOME}/claude-setup/claude-promptbank.sh"

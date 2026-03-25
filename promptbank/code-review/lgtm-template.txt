@@ -1,0 +1,14 @@
+LGTM!
+
+Great work on [specific aspect of the PR]. The implementation is clean and follows our coding standards.
+
+**Highlights:**
+- [Specific good practice 1]
+- [Specific good practice 2]
+- [Specific good practice 3]
+
+**Testing:** Tests provide good coverage of the happy path and edge cases.
+
+**Documentation:** Clear and helpful inline comments where needed.
+
+Approving to merge.
