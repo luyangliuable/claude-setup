@@ -42,3 +42,41 @@ temp/
 # Local documentation (not to be tracked)
 FIX_SUMMARY.md
 SKILLS_GUIDE.md
+
+# Skill execution scripts (generated)
+.agents/skills/*/adapt
+.agents/skills/*/animate
+.agents/skills/*/audit
+.agents/skills/*/bolder
+.agents/skills/*/clarify
+.agents/skills/*/code-quality
+.agents/skills/*/colorize
+.agents/skills/*/critique
+.agents/skills/*/distill
+.agents/skills/*/drawio
+.agents/skills/*/emacs-elisp-debugging
+.agents/skills/*/extract
+.agents/skills/*/frontend-design
+.agents/skills/*/github-actions
+.agents/skills/*/harden
+.agents/skills/*/list-models
+.agents/skills/*/normalize
+.agents/skills/*/onboard
+.agents/skills/*/optimize
+.agents/skills/*/polish
+.agents/skills/*/quieter
+.agents/skills/*/react-best-practices
+.agents/skills/*/teach-impeccable
+.agents/skills/*/code-reviewer
+.agents/skills/*/fetch-unresolved-comments
+.agents/skills/*/redux-thunk
+.agents/skills/*/dhp-environment-definition
+
+# Snapshots and backups
+global/snapshots/
+
+# Frontend UI (Next.js)
+claude-setup-ui/.next/
+claude-setup-ui/out/
+claude-setup-ui/build/
+claude-setup-ui/.turbo/

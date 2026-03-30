@@ -12,9 +12,9 @@ echo ""
 
 # Check if already installed
 if [[ -d "$INSTALL_DIR" ]]; then
-    echo "✓ Claude setup directory found at: $INSTALL_DIR"
+    echo "[OK] Claude setup directory found at: $INSTALL_DIR"
 else
-    echo "✗ Error: Installation directory not found: $INSTALL_DIR"
+    echo "[ERROR] Error: Installation directory not found: $INSTALL_DIR"
     echo "  Clone the repository first:"
     echo "  git clone https://github.com/luyangliuable/claude-config.git ~/claude-setup"
     exit 1
@@ -22,14 +22,14 @@ fi
 
 # Check for .zshrc
 if [[ ! -f "$ZSHRC" ]]; then
-    echo "✗ Error: .zshrc not found at: $ZSHRC"
+    echo "[ERROR] Error: .zshrc not found at: $ZSHRC"
     echo "  Create it first or use bash instead of zsh"
     exit 1
 fi
 
 # Check if already sourced
 if grep -q "claude-profiles.sh" "$ZSHRC" 2>/dev/null; then
-    echo "✓ claude-profiles.sh already sourced in .zshrc"
+    echo "[OK] claude-profiles.sh already sourced in .zshrc"
 else
     echo ""
     echo "Adding claude-profiles.sh to .zshrc..."
@@ -39,7 +39,7 @@ else
     echo "# Claude Code profile management" >> "$ZSHRC"
     echo "source ${INSTALL_DIR}/claude-profiles.sh" >> "$ZSHRC"
 
-    echo "✓ Added to .zshrc"
+    echo "[OK] Added to .zshrc"
 fi
 
 # Check for environment variables
@@ -53,17 +53,17 @@ if [[ -z "$ANTHROPIC_API_KEY" ]] && [[ -z "$OPENAI_API_KEY" ]]; then
     echo "  export OPENAI_API_KEY='your-key-here'  # For OpenAI-compatible endpoints"
 else
     if [[ -n "$ANTHROPIC_API_KEY" ]]; then
-        echo "✓ ANTHROPIC_API_KEY is set"
+        echo "[OK] ANTHROPIC_API_KEY is set"
     fi
     if [[ -n "$OPENAI_API_KEY" ]]; then
-        echo "✓ OPENAI_API_KEY is set"
+        echo "[OK] OPENAI_API_KEY is set"
     fi
 fi
 
 # Check for Claude CLI
 echo ""
 if command -v claude &> /dev/null; then
-    echo "✓ Claude CLI installed: $(command -v claude)"
+    echo "[OK] Claude CLI installed: $(command -v claude)"
 else
     echo "⚠  Warning: Claude CLI not found"
     echo "  Install it from: https://docs.anthropic.com/claude/docs/claude-cli"
@@ -74,7 +74,7 @@ echo ""
 if [[ -d "${INSTALL_DIR}/.agents/skills" ]]; then
     skill_count=$(find "${INSTALL_DIR}/.agents/skills" -maxdepth 1 -type d | wc -l | tr -d ' ')
     skill_count=$((skill_count - 1))  # Subtract .agents/skills itself
-    echo "✓ ${skill_count} skills found"
+    echo "[OK] ${skill_count} skills found"
 
     ls -1 "${INSTALL_DIR}/.agents/skills" | while read -r skill; do
         [[ -d "${INSTALL_DIR}/.agents/skills/$skill" ]] && echo "  - $skill"

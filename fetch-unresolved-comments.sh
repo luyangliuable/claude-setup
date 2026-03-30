@@ -44,9 +44,6 @@ query($owner: String!, $repo: String!, $number: Int!) {
           id
           isResolved
           path
-          line
-          startLine
-          diffHunk
           comments(first: 50) {
             nodes {
               id
@@ -89,9 +86,6 @@ echo "$RESULT" | jq -r '
       file: .[0].path,
       threads: map({
         thread_id: .id,
-        line: .line,
-        startLine: .startLine,
-        diffHunk: .diffHunk,
         comments: .comments.nodes | map({
           id: .databaseId,
           body: .body,

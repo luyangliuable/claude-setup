@@ -67,7 +67,7 @@ copy_prompt() {
     fi
 
     cat "$prompt_path" | pbcopy
-    echo "✓ Copied '$1' to clipboard"
+    echo "[OK] Copied '$1' to clipboard"
 }
 
 edit_prompt() {
@@ -111,7 +111,7 @@ interactive_select() {
     if [[ "$selection" =~ ^[0-9]+$ ]] && [ "$selection" -ge 1 ] && [ "$selection" -le "${#prompts[@]}" ]; then
         local selected="${prompts[$((selection-1))]}"
         cat "$PROMPTBANK_DIR/$selected.txt" | pbcopy
-        echo "✓ Copied '$selected' to clipboard"
+        echo "[OK] Copied '$selected' to clipboard"
     else
         echo "Error: Invalid selection"
         exit 1

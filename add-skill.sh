@@ -34,10 +34,10 @@ ln -sf ../../.agents/skills/"$SKILL_NAME" "$SKILL_NAME"
 # 4. Verify
 echo "[4/6] Verifying installation..."
 if [ -L ~/claude-setup/.claude/skills/"$SKILL_NAME" ]; then
-    echo "✓ Symlink created successfully"
+    echo "[OK] Symlink created successfully"
     readlink ~/claude-setup/.claude/skills/"$SKILL_NAME"
 else
-    echo "✗ Symlink creation failed"
+    echo "[ERROR] Symlink creation failed"
     exit 1
 fi
 
@@ -52,7 +52,7 @@ if command -v jq &> /dev/null; then
     jq --arg name "$SKILL_NAME" --arg source "$SOURCE_PATH" --arg hash "$HASH" \
         '.skills[$name] = {"source": $source, "sourceType": "github", "computedHash": $hash}' \
         skills-lock.json > skills-lock.json.tmp && mv skills-lock.json.tmp skills-lock.json
-    echo "✓ Updated skills-lock.json"
+    echo "[OK] Updated skills-lock.json"
 else
     echo "⚠ jq not installed - please manually update skills-lock.json"
 fi

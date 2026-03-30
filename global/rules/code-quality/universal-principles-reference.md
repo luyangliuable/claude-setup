@@ -1,6 +1,6 @@
 # Code Quality - Universal Principles (Reference)
 
-This file references universal principles from the code-quality skill. For detailed explanations with examples, see: `.agents/skills/code-quality/references/rules/`
+This file references universal principles from the code-quality skill. For detailed explanations with examples, see: `references/rules/` (within code-quality directory)
 
 ## SOLID Principles (Language-Agnostic)
 
@@ -48,4 +48,4 @@ This file references universal principles from the code-quality skill. For detai
 
 ---
 
-**Note**: These principles are maintained in the code-quality skill to avoid duplication. Use the `/code-quality` skill for comprehensive code reviews.
+**Note**: These principles are maintained in `references/rules/` for self-contained reference. Use the `/code-quality` skill for comprehensive code reviews.

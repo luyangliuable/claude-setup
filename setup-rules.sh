@@ -22,9 +22,9 @@ fi
 ln -sf "$RULES_SOURCE" "$RULES_TARGET"
 
 if [ -L "$RULES_TARGET" ]; then
-    echo "✓ Global rules symlinked: ~/.claude/rules/global -> $RULES_SOURCE"
+    echo "[OK] Global rules symlinked: ~/.claude/rules/global -> $RULES_SOURCE"
 else
-    echo "✗ Failed to create symlink"
+    echo "[ERROR] Failed to create symlink"
     exit 1
 fi
 

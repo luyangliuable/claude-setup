@@ -1,4 +1,4 @@
-# CLAUDE System-Wide Configuration
+## CLAUDE System-Wide Configuration
 
 <generalToolUse>
 - Use SMALL OPERATIONS: max 50 lines per operation (create, find/replace, tool arguments)
