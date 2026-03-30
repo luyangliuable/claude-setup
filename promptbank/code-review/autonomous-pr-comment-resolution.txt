@@ -1,0 +1,234 @@
+# AUTONOMOUS PR Comment Resolution (NO HUMAN IN LOOP)
+
+CRITICAL: This prompt is designed to run COMPLETELY AUTONOMOUSLY.
+DO NOT ask for permission. DO NOT wait for human input. Execute immediately.
+
+## Execution Flow
+
+### PHASE 1: Fetch ALL Unresolved Comments (Immediate)
+
+Run this command FIRST, without asking:
+
+```bash
+~/claude-setup/fetch-unresolved-comments.sh https://github.com/[OWNER]/[REPO]/pull/[NUMBER]
+```
+
+Parse JSON output to get list of unresolved comments.
+Count total: N comments.
+
+### PHASE 2: Spawn N Agents (One Per Comment)
+
+CRITICAL: Spawn EXACTLY N agents where N = number of unresolved comments.
+
+For EACH comment, spawn ONE agent using Agent tool:
+- Use run_in_background: true
+- Each agent is independent
+- All work in parallel
+
+### PHASE 3: Agent Workflow (Per Comment)
+
+Each agent MUST follow these steps IN ORDER:
+
+#### 1. READ AND UNDERSTAND
+- Read comment body carefully
+- Identify what needs to be fixed
+- Note file path and line number
+
+#### 2. FIND ALL OCCURRENCES
+- Use Grep to find ALL instances of the pattern
+- Not just the commented line - search entire codebase
+- Follow team conventions (absolute imports, ??, no TODOs, etc.)
+
+#### 3. APPLY FIX
+- Make code changes
+- Follow clean code principles
+- Apply fix consistently everywhere
+
+#### 4. VERIFY 100% FIXED
+- Double-check ALL requirements met
+- Read the changed files
+- Confirm fix addresses comment completely
+- If NOT 100% sure, investigate more
+
+#### 5. RUN PRE-PUSH CHECKS
+```bash
+npm test        # MUST pass
+npm run lint    # No errors
+npm run format  # Format code
+npm run build   # MUST succeed
+```
+
+If ANY check fails: fix and retry. DO NOT proceed until ALL pass.
+
+#### 6. COMMIT AND PUSH
+- Commit: "Address PR feedback: [brief description]"
+- NO AI attribution
+- Push to remote branch
+
+#### 7. MONITOR PIPELINES
+- Use `gh run list` to get workflow IDs
+- Use `gh run watch` for each workflow
+- Wait for ALL pipelines to pass
+- If ANY pipeline fails: fix and retry
+
+#### 8. REPLY TO ORIGINAL THREAD
+CRITICAL: Reply to the EXACT comment thread, not create new comment
+
+Use gh pr comment with proper comment ID:
+```bash
+gh pr comment [PR_NUMBER] --body "Fixed: [explain what was done]"
+```
+
+Example replies:
+- "Fixed: Changed to absolute imports throughout codebase"
+- "Fixed: Removed unused file and its test"
+- "Fixed: Reverted unnecessary mock positioning changes"
+
+#### 9. MARK AS RESOLVED
+Use GitHub GraphQL API to resolve the thread:
+
+```bash
+gh api graphql -f query='
+  mutation {
+    resolveReviewThread(input: {threadId: "[THREAD_ID]"}) {
+      thread { id isResolved }
+    }
+  }'
+```
+
+#### 10. REPORT COMPLETION
+Log to `/tmp/pr-[NUMBER]-resolved.json`:
+```json
+{
+  "comment_id": "123",
+  "thread_id": "PRRT_xxx",
+  "status": "resolved",
+  "fixed_at": "timestamp",
+  "commits": ["abc123"]
+}
+```
+
+## CRITICAL Rules for Autonomy
+
+### 1. NO PERMISSION ASKING
+- Never ask "should I proceed?"
+- Never ask "is this OK?"
+- Execute immediately
+
+### 2. ONE AGENT PER COMMENT
+- 8 comments = 8 agents
+- 1 comment = 1 agent
+- N comments = N agents
+
+### 3. PARALLEL EXECUTION
+- Spawn all agents at once
+- Use run_in_background: true
+- Let them work independently
+
+### 4. REPLY TO EXACT THREAD
+- Use comment_id from fetch-unresolved-comments output
+- Reply to THAT specific thread
+- NOT a new top-level comment
+
+### 5. VERIFY BEFORE RESOLVING
+- Only mark resolved after 100% fixed
+- Only after pipelines pass
+- Only after reply posted
+
+### 6. HANDLE FAILURES GRACEFULLY
+- If fix fails after 3 tries: escalate to `/tmp/pr-[NUMBER]-failed.json`
+- If pipeline fails after 3 tries: escalate
+- If can't understand comment: escalate
+- Escalation = log and notify, don't block other agents
+
+## Example Agent Invocation
+
+When you have N=8 comments, spawn 8 agents like this:
+
+**Agent 1**: Fix comment at line 13
+**Agent 2**: Fix comment at line 74
+**Agent 3**: Fix comment at line 125
+**Agent 4**: Fix comment at line 154
+**Agent 5**: Fix comment at line 201
+**Agent 6**: Fix comment at line 225
+**Agent 7**: Remove context-id.ts file
+**Agent 8**: Find and remove unused files
+
+Each agent prompt includes:
+- Comment body
+- File path
+- Line number
+- Thread ID (for resolving)
+- Comment ID (for replying)
+- Full workflow steps 1-10 above
+
+## GitHub API Commands Reference
+
+```bash
+# Fetch unresolved comments
+~/claude-setup/fetch-unresolved-comments.sh https://github.com/[OWNER]/[REPO]/pull/[NUMBER]
+
+# Reply to specific comment thread
+gh pr comment [PR_NUMBER] --body "Fixed: [explanation]"
+
+# Resolve review thread
+gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "[THREAD_ID]"}) { thread { id } } }'
+
+# Check pipeline status
+gh run list --limit 10
+gh run watch [RUN_ID]
+```
+
+## Success Criteria
+
+ALL agents must:
+- Apply fix correctly
+- Pass all pre-push checks
+- Pass all pipelines
+- Reply to exact comment thread
+- Mark thread as resolved
+- Report completion
+
+System is successful when:
+- ALL N comments are resolved
+- ALL agents report completion
+- NO escalations to manual intervention
+
+## Failure Handling Protocol
+
+### When Any Pipeline Fails:
+1. STOP all monitoring immediately
+2. Get full logs: `gh run view <run_id> --log`
+3. Analyze root cause
+4. Apply fix
+5. Push changes
+6. Restart monitoring from scratch
+
+### Never Complete Task With Failing Pipelines
+
+## Agent Coordination (Parallel Mode)
+
+- Each agent is independent and monitors single workflow
+- Agents run concurrently in background
+- Main process coordinates agents and detects failures
+- On failure: main process stops all agents via TaskStop
+- On success: all agents complete and report success
+
+## Team Conventions to Follow
+
+- **Absolute imports over relative imports** - Use `@/` path alias instead of `./` or `../`
+- **Use nullish coalescing (??) instead of logical OR (||) for default values**
+- **No TODO comments** - SonarQube flags these as tech debt
+- **Use native HTML elements for accessibility** - Use `<button>` instead of `<div role="button">`
+- **Never import from app/ in lib/** - lib/ is a standalone npm package
+- **Import types from original source files** - Never re-export types from barrel files
+
+## Key Improvements Over Manual Process
+
+1. **Zero human intervention**: No asking, no waiting, immediate execution
+2. **Correct agent count**: Automatically spawns N agents for N comments
+3. **Reply to exact thread**: Uses comment_id to reply to original thread, not create new comment
+4. **Double-check verification**: Explicit step to verify 100% fixed before resolving
+5. **Headless operation**: Designed to run without any human input
+6. **Clear workflow**: Each agent has explicit step-by-step instructions
+7. **Proper state tracking**: Logs completion to JSON for auditability

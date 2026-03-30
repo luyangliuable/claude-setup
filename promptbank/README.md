@@ -49,12 +49,16 @@ pb edit <name>       # Open prompt in $EDITOR
 - **testing/test-boilerplate** - Vitest test structure with Arrange/Act/Assert pattern
 - **testing/coverage-request** - Commands for running tests with coverage
 - **testing/pre-push-checklist** - Pre-push verification checklist for all languages
+- **testing/meaningful-unit-tests** - Standards for writing meaningful unit tests (no trivial/duplicate tests, positive/negative coverage)
 
 ### Code Review
 
 - **code-review/review-checklist** - Comprehensive PR review checklist
 - **code-review/lgtm-template** - Template for approval comments
 - **code-review/nitpick-template** - Template for minor suggestions
+- **code-review/resolve-pr-comments** - Systematic workflow for resolving PR review comments
+- **code-review/auto-resolve-pr-comments-loop** - Continuous monitoring system that auto-detects and fixes PR comments with /loop
+- **code-review/autonomous-pr-comment-resolution** - FULLY AUTONOMOUS system with ZERO human in loop (auto-fetch, auto-spawn N agents, auto-fix, auto-verify, auto-reply, auto-resolve)
 
 ### Debugging
 
@@ -67,7 +71,8 @@ pb edit <name>       # Open prompt in $EDITOR
 - **workflow/clean-solution** - Ensure clean, robust, and simple solutions
 - **workflow/thorough-exploration** - Explore codebase thoroughly before changes
 - **workflow/concise-plan** - Guidelines for concise plan creation
-- **workflow/pipeline-monitoring** - Monitor GitHub Actions until all pass
+- **workflow/pipeline-monitoring** - Monitor GitHub Actions until all pass (simple sequential)
+- **workflow/parallel-pipeline-monitoring** - Monitor multiple GitHub Actions pipelines in parallel for faster feedback
 - **workflow/use-skills** - Invoke appropriate agent skills for tasks
 
 ## Examples
@@ -128,7 +133,10 @@ promptbank/
 ├── code-review/
 │   ├── review-checklist.txt
 │   ├── lgtm-template.txt
-│   └── nitpick-template.txt
+│   ├── nitpick-template.txt
+│   ├── resolve-pr-comments.txt
+│   ├── auto-resolve-pr-comments-loop.txt
+│   └── autonomous-pr-comment-resolution.txt
 ├── debugging/
 │   ├── error-analysis.txt
 │   ├── rca-template.txt
@@ -138,6 +146,7 @@ promptbank/
     ├── thorough-exploration.txt
     ├── concise-plan.txt
     ├── pipeline-monitoring.txt
+    ├── parallel-pipeline-monitoring.txt
     └── use-skills.txt
 ```
 

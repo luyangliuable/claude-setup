@@ -1,0 +1,289 @@
+# Continuous PR Comment Auto-Resolution with Monitoring
+
+Long-running monitoring system that auto-detects and fixes PR review comments.
+
+Uses /loop skill to check every 1 minute for new comments, applies fixes automatically, and marks resolved after pipelines pass.
+
+## Prerequisites
+
+- PR number or URL
+- Branch checked out locally
+- GitHub CLI authenticated
+- All pre-push checks passing (tests, lint, build)
+
+## Quick Start
+
+```bash
+# Start monitoring PR #123
+/loop 1m "Check PR 123 for new review comments and auto-resolve"
+
+# Or with full URL
+/loop 1m "Monitor https://github.com/org/repo/pull/123 for new comments"
+```
+
+## How It Works
+
+### Each 1-Minute Cycle:
+
+1. **Fetch unresolved comments**:
+   ```bash
+   ~/claude-setup/fetch-unresolved-comments.sh <PR_URL>
+   ```
+
+2. **Detect new comments**:
+   - Compare against previous state in `/tmp/pr-{number}-seen.json`
+   - Identify net-new comment threads
+
+3. **For each NEW comment** (parallel agents):
+   a) Spawn background agent to fix the comment
+   b) Agent analyzes feedback and applies code changes
+   c) Agent commits: "Address PR feedback: <brief summary>"
+   d) Agent pushes to remote
+   e) Agent spawns parallel pipeline monitors (see parallel-pipeline-monitoring.txt)
+   f) Wait for ALL pipelines to pass
+   g) If pass: Reply to thread + mark resolved
+   h) If fail: Log issue, skip auto-resolution, notify user
+
+4. **Update state**: Save comment IDs to `/tmp/pr-{number}-seen.json`
+
+5. **Sleep 1 minute**, repeat
+
+## Agent Implementation Details
+
+When a new comment is detected, spawn an agent with this workflow:
+
+```
+Task: Auto-resolve PR comment {comment_id}
+
+Steps:
+1. Read comment content and identify requested changes
+2. Use Grep to find ALL occurrences in codebase (not just one file)
+3. Apply fixes following team conventions:
+   - Absolute imports over relative
+   - Use ?? instead of || for defaults
+   - No TODO comments
+   - Native HTML elements for accessibility
+   - Import types from original source files
+4. Run pre-push verification:
+   npm test        # Must pass
+   npm run lint    # No errors
+   npm run format  # Code formatted
+   npm run build   # Must succeed
+5. Create commit: "Address PR feedback: {brief description}"
+6. Push to remote
+7. Spawn pipeline monitors (parallel-pipeline-monitoring pattern):
+   - gh run list --limit 10 --json status,name,databaseId,workflowName
+   - Launch one agent per workflow (run_in_background: true)
+   - Each monitors: gh run watch <run_id>
+8. Wait for ALL pipelines to pass
+9. If pass:
+   - Reply to thread: gh pr comment <pr-number> --body "Fixed: {explanation}"
+   - Mark resolved via GitHub API
+10. If fail:
+    - Log to /tmp/pr-{number}-escalated.json
+    - Notify user with failure details
+    - DO NOT mark as resolved
+```
+
+## State Management
+
+State file: `/tmp/pr-{number}-seen.json`
+
+Format:
+```json
+{
+  "pr_number": 123,
+  "seen_comment_ids": ["C123", "C456", "C789"],
+  "failed_comment_ids": ["C999"],
+  "last_check": "2026-03-30T10:30:00Z",
+  "cumulative_lines_changed": 245
+}
+```
+
+## Stopping the Monitor
+
+- Press Ctrl+C to stop the loop
+- Monitor auto-stops if PR is merged or closed
+- Auto-stops after 7 days (CronCreate auto-expiration)
+
+## Safety Features
+
+### Pre-push Validation (Every Fix)
+
+```bash
+npm test        # Must pass
+npm run lint    # No errors (warnings OK)
+npm run format  # Code formatted
+npm run build   # Must succeed
+```
+
+### Pipeline Integration
+
+- Only mark resolved after ALL GitHub Actions pass
+- If pipelines fail repeatedly (3x), escalate to manual intervention
+- Use parallel monitoring pattern for faster feedback
+
+### Rate Limiting
+
+- 1-minute interval provides fast response while respecting GitHub API limits
+- Automatic backoff if rate limiting detected
+
+### Error Handling
+
+- If agent can't parse comment → skip and log
+- If fix causes test failures → revert and escalate
+- If reviewer marks "DO NOT AUTO-RESOLVE" → skip that thread
+- If cumulative changes exceed 300 lines → escalate for PR size limit
+
+## Escalation to Manual
+
+Auto-resolution skipped when:
+- Agent can't understand the comment
+- Fix causes tests to fail after 3 retries
+- Pipelines fail after 3 push attempts
+- Comment contains "manual", "discuss", "clarify", or "DO NOT AUTO-RESOLVE"
+- Reviewer explicitly requests manual fix
+- Cumulative lines changed exceed 300 (PR size limit)
+
+In these cases:
+- Comment is logged to `/tmp/pr-{number}-escalated.json`
+- User is notified
+- Comment remains unresolved for manual handling
+
+## Multi-Comment Coordination
+
+If multiple new comments detected simultaneously:
+- Spawn one agent per comment (max 5 parallel)
+- Each agent works independently
+- All agents push to same branch (may conflict, use rebase)
+- Pipeline monitoring happens after ALL agents push
+- If any pipeline fails, ALL unresolved comments are escalated
+
+## Example Output
+
+```
+[10:00] Checking PR #123 for new comments...
+[10:00] Found 2 new comments (C890, C891)
+[10:00] Spawning agents to fix comments...
+[10:01] Agent 1: Fixing relative imports → absolute imports
+[10:02] Agent 1: Committed and pushed (commit abc123)
+[10:02] Agent 1: Monitoring pipelines...
+[10:05] Agent 1: All pipelines passed ✓
+[10:05] Agent 1: Replied to thread C890
+[10:05] Agent 1: Marked C890 as resolved
+[10:03] Agent 2: Fixing || → ?? for default values
+[10:04] Agent 2: Committed and pushed (commit def456)
+[10:04] Agent 2: Monitoring pipelines...
+[10:08] Agent 2: All pipelines passed ✓
+[10:08] Agent 2: Replied to thread C891
+[10:08] Agent 2: Marked C891 as resolved
+[10:08] Sleeping 1 minute until next check...
+```
+
+## Integration with Existing Workflows
+
+### Reuses:
+- `fetch-unresolved-comments` skill
+- `parallel-pipeline-monitoring` pattern
+- All PR review standards from global rules
+- PR size guidelines (agent tracks cumulative lines changed)
+
+### Respects:
+- Team coding conventions (absolute imports, ??, no TODOs, etc.)
+- Clean code principles
+- Pre-push verification checks
+- Git safety protocol (no force push, no skip hooks)
+- NO AI attribution (no "Co-Authored-By: Claude")
+
+## GitHub API Commands
+
+```bash
+# Fetch unresolved comments
+~/claude-setup/fetch-unresolved-comments.sh <PR_URL>
+
+# Reply to comment thread
+gh pr comment <pr-number> --body "Fixed: {explanation}"
+
+# Check PR status
+gh pr view <pr-number>
+
+# List running workflows
+gh run list --limit 10 --json status,name,databaseId,workflowName
+
+# Watch specific workflow
+gh run watch <run_id>
+
+# View workflow logs
+gh run view <run_id> --log
+```
+
+## Advanced: Custom Polling Interval
+
+Default is 1 minute for fast response. Adjust if needed:
+
+```bash
+# Check every 30 seconds (for active review sessions)
+/loop 30s "Monitor PR 123"
+
+# Check every 5 minutes (for less urgent PRs)
+/loop 5m "Monitor PR 123"
+```
+
+## Lifecycle Management
+
+- Monitor single PR at a time (specified at start)
+- Stop conditions: User cancels loop, PR is merged, or max iterations reached
+- Graceful handling of "PR closed" or "branch deleted" scenarios
+
+## Troubleshooting
+
+### "No new comments detected" but comments exist
+- Check state file: `/tmp/pr-{number}-seen.json`
+- Delete state file to reset: `rm /tmp/pr-{number}-seen.json`
+- Restart monitoring
+
+### Agent stuck on pipeline monitoring
+- Check pipeline status manually: `gh run list`
+- Stop monitoring agents: Use TaskStop
+- Investigate pipeline logs: `gh run view <run_id> --log`
+
+### Rate limit errors
+- Monitor will automatically backoff
+- Increase polling interval: `/loop 2m` instead of `/loop 1m`
+- Check rate limit status: `gh api rate_limit`
+
+### Cumulative changes exceed 300 lines
+- Agent will stop auto-resolution
+- Complete fixes manually
+- Consider breaking PR into smaller chunks
+
+## Best Practices
+
+1. **Start monitoring after PR is ready for review**
+   - Don't start during active development
+   - Ensure all initial checks pass first
+
+2. **Monitor during active review sessions**
+   - Use 1-minute interval for fast response
+   - Reviewer gets immediate fixes
+
+3. **Stop monitoring when done**
+   - Ctrl+C to stop
+   - Don't leave running indefinitely
+
+4. **Review auto-commits periodically**
+   - Check that fixes are correct
+   - Verify commit messages are descriptive
+
+5. **Escalate complex comments manually**
+   - Don't rely on auto-resolution for architectural discussions
+   - Use "DO NOT AUTO-RESOLVE" in comment for manual handling
+
+## Security Considerations
+
+- All changes follow pre-push verification (tests, lint, build)
+- No changes pushed without passing local checks
+- Pipeline monitoring ensures production quality
+- Escalation on any pipeline failure
+- No force push or hook skipping
+- Commit messages follow team standards (no AI attribution)

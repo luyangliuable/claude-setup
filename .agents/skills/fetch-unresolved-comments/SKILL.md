@@ -2,7 +2,7 @@
 name: fetch-unresolved-comments
 description: Fetch unresolved PR review comments using GitHub GraphQL API, filtering out resolved feedback.
 allowed-tools:
-  - Bash(uv run skills fetch-unresolved-comments:*)
+  - Bash
 ---
 
 # Fetch Unresolved PR Review Comments
@@ -23,22 +23,19 @@ Uses GitHub's GraphQL API to fetch only unresolved review thread comments from a
    - Otherwise:
      - Use `gh pr view --json url -q '.url'` to get the current branch's PR URL
 
-2. **Run the skill**:
+2. **Run the script**:
 
    ```bash
-   uv run skills fetch-unresolved-comments <pr_url>
+   ~/claude-setup/fetch-unresolved-comments.sh <pr_url>
    ```
 
    Example:
 
    ```bash
-   uv run skills fetch-unresolved-comments https://github.com/mlflow/mlflow/pull/18327
+   ~/claude-setup/fetch-unresolved-comments.sh https://github.com/mlflow/mlflow/pull/18327
    ```
 
-   The script automatically reads the GitHub token from:
-
-   - `GH_TOKEN` environment variable, or
-   - `gh auth token` command if environment variables are not set
+   The script uses the GitHub CLI (`gh`) which must be authenticated
 
 ## Example Output
 
