@@ -5,6 +5,7 @@ Centralized configuration repository for Claude Code setup, including skills, pr
 ## Table of Contents
 
 - [Overview](#overview)
+- [Architecture](#architecture)
 - [Quick Start](#quick-start)
   - [Installation](#installation)
   - [Source Profile Management](#source-profile-management)
@@ -45,6 +46,17 @@ This repository contains:
 - **Profile Configurations**: JSON files defining different Claude Code environments
 - **CLAUDE.md**: Global coding standards and project instructions
 - **Skill Management System**: Install from GitHub, create custom skills, sync across codebase
+
+## Architecture
+
+This repository uses three complementary systems:
+- **Skills** (`.agents/skills/`): Agent capabilities invoked at runtime with `/skill-name`
+- **Rules** (`global/rules/`): Enforced standards always loaded via CLAUDE.md
+- **Promptbank** (`promptbank/`): Quick templates accessed via `pb` CLI
+
+Files with similar names serve different purposes. For example, `promptbank/testing/pre-push-checklist.txt` is a simple template for humans to copy/paste, while `global/rules/testing/pre-push-verification.md` contains authoritative standards enforced by Claude.
+
+See `docs/architecture.md` for detailed organization and distinctions.
 
 ## Quick Start
 
