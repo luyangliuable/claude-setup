@@ -3,6 +3,8 @@
 [ ] Nullish coalescing (??) used for defaults (not ||)
 [ ] No TODO comments
 [ ] Native HTML elements for accessibility
+[ ] No unused imports
+[ ] No trailing whitespace
 [ ] No unused mocks in tests
 [ ] Test descriptions are complete sentences
 [ ] Error handling with try/catch and logging included

@@ -3,6 +3,11 @@
 # Extensible profile management system for Claude Code
 # Source this file in your .zshrc: source ~/claude-setup/claude-profiles.sh
 
+# Source toggle system
+if [[ -f "${HOME}/claude-setup/claude-toggle.sh" ]]; then
+    source "${HOME}/claude-setup/claude-toggle.sh"
+fi
+
 # Configuration
 export CLAUDE_PROFILES_DIR="${HOME}/claude-setup/profiles"
 export CLAUDE_SYSTEM_PROMPT='After pushing code, ALWAYS monitor GitHub Actions pipelines until they pass. Use gh run list to check status and gh run watch to monitor. If pipelines fail, fix and push again. Create feature branches with Jira ticket ID prefix (e.g., PROJ-123-feature-name). Use appropriate Skills() when consolidating plans and writing code.'

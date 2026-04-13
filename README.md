@@ -540,6 +540,117 @@ pb edit git/pr-description
 
 See `promptbank/README.md` for detailed usage.
 
+## Toggle System
+
+Temporarily disable rules and skills on a per-profile basis (session-only).
+
+### What Happens When You Disable?
+
+When you disable a rule or skill:
+1. The symlink in `~/.claude/rules/global/` or `~/.claude/skills/` is removed
+2. Claude cannot see the file (it doesn't exist in Claude's search path)
+3. The disabled state is tracked in an environment variable for the current session
+
+**Important:**
+- **Session-only**: State is lost when you close the terminal
+- **Per-terminal**: Each terminal window has independent toggle state
+- **Per-profile**: Different profiles (cpa, cpb, c) have independent state within a session
+
+### Usage
+
+#### Interactive UI (Recommended)
+
+```bash
+# Launch interactive checkbox interface
+claude-toggle ui
+
+# Alternative command
+claude-toggle interactive
+
+# Navigate with arrow keys
+# Space to toggle checkboxes
+# Enter to apply changes
+```
+
+The interactive UI provides:
+- Visual checkbox interface for bulk toggling
+- Real-time status display (checked = disabled, unchecked = enabled)
+- Profile-specific views
+- Automatic fallback to bash `select` if `dialog` command unavailable
+
+#### Command Line Interface
+
+```bash
+# Disable a rule
+claude-toggle disable rule core/working-philosophy.md
+
+# Disable a skill
+claude-toggle disable skill code-reviewer
+
+# Enable a rule
+claude-toggle enable rule core/working-philosophy.md
+
+# Enable a skill
+claude-toggle enable skill code-reviewer
+
+# List all with status
+claude-toggle list
+
+# Show current profile's disabled items
+claude-toggle status
+
+# Reset all (re-enable everything)
+claude-toggle reset
+```
+
+### Key Features
+
+- **Interactive UI**: Visual checkbox interface for bulk toggling
+- **Session-only**: Toggle state lost when shell exits
+- **Per-terminal**: Each terminal window has independent state
+- **Per-profile**: Each profile (cpa, cpb, c) has independent toggle state
+- **Clean**: Uses symlink manipulation, no config files
+- **Reversible**: Easy to enable/disable repeatedly
+
+### Profile Detection
+
+The system attempts to detect the current profile from your command history. For explicit control:
+
+```bash
+export CLAUDE_TOGGLE_CURRENT_PROFILE="CPA"
+claude-toggle disable rule testing/pre-push-verification.md
+```
+
+### Examples
+
+**Scenario 1: Disable multiple rules for this session**
+```bash
+claude-toggle ui
+# Select Rules
+# Check: bug-management/bug-database.md
+# Check: testing/pre-push-verification.md
+# Apply
+```
+
+**Scenario 2: Different terminals, different states**
+```bash
+# Terminal 1
+claude-toggle disable rule core/library-usage.md
+
+# Terminal 2 (separate window)
+# core/library-usage.md is still ENABLED here
+```
+
+**Scenario 3: Different profiles, different states**
+```bash
+cpa
+claude-toggle disable skill animate
+# animate disabled for profile 'cpa'
+
+cpb
+# animate still ENABLED for profile 'cpb'
+```
+
 ## Advanced Usage
 
 ### Custom System Prompt

@@ -1,6 +1,34 @@
 # Pre-Push Verification (MANDATORY)
 
-**MANDATORY: Before pushing any changes, run ALL language-specific checks:**
+**MANDATORY: Before pushing any changes, run ALL code quality and language-specific checks:**
+
+## Code Quality Checks (MANDATORY - ALL Languages)
+
+**Before running language-specific checks, ensure:**
+
+### 1. Trailing Whitespace
+- Remove trailing whitespace from all modified/new files
+- Most formatters handle this automatically
+- Manual check: `git diff --check` (detects trailing whitespace)
+
+### 2. Unused Imports
+- Remove unused imports from all modified/new files
+- ESLint/TSLint: Handled by `npm run lint` with appropriate rules
+- Python: `ruff check` with unused-import rules
+- Rust: `cargo clippy` catches unused imports
+- Go: `goimports` removes unused imports automatically
+
+### 3. Team Conventions
+Apply conventions from `global/rules/code-quality/team-conventions.md`:
+- Use `??` (nullish coalescing) instead of `||` for default values
+- Use absolute imports (`@/`) instead of relative imports
+- No TODO comments (creates tech debt)
+- Use native HTML elements for accessibility
+
+**Automated Check**: Most of these are caught by linters if configured properly.
+**Manual Review**: For new files, verify conventions are followed.
+
+---
 
 ## JavaScript/TypeScript/Node.js
 

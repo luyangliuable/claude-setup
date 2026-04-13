@@ -39,8 +39,22 @@ This file provides essential cross-cutting concerns. Detailed rules are in `glob
 - NEVER amend commits (create NEW commits)
 - NEVER commit without explicit user request
 
+### Rebase Policy (CRITICAL)
+- NEVER use git rebase unless explicitly requested
+- Use merge commits to preserve full history
+- Rebasing can unintentionally reintroduce removed code
+- Rebasing obscures what changes were made and when
+- If user wants to update branch: `git merge origin/develop`, NOT rebase
+
 ### Pre-Push Verification (MANDATORY)
 Before pushing ANY changes:
+
+**Code Quality (ALL files modified/added):**
+- Remove all trailing whitespace
+- Remove all unused imports
+- Apply team conventions (use ?? not ||, absolute imports, etc.)
+
+**Language-Specific Tests:**
 ```bash
 npm test && npm run lint && npm run build  # JS/TS
 pytest && ruff check                        # Python

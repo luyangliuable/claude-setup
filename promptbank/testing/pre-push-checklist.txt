@@ -1,5 +1,14 @@
 Pre-push verification checklist:
 
+Code Quality (All Modified/Added Files):
+[ ] No trailing whitespace (git diff --check)
+[ ] No unused imports (linter catches this)
+[ ] Conventions followed:
+    [ ] Use ?? instead of || for defaults
+    [ ] Absolute imports (not relative)
+    [ ] No TODO comments
+    [ ] Native HTML elements used
+
 JavaScript/TypeScript:
 [ ] npm test (all tests pass)
 [ ] npm run lint (no errors)
