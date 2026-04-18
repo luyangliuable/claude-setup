@@ -72,6 +72,9 @@ SKILLS_GUIDE.md
 .agents/skills/*/redux-thunk
 .agents/skills/*/dhp-environment-definition
 
+# Private/sensitive skills
+.agents/skills/dhp/
+
 # Snapshots and backups
 global/snapshots/
 

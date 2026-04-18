@@ -3,9 +3,9 @@
 # Extensible profile management system for Claude Code
 # Source this file in your .zshrc: source ~/claude-setup/claude-profiles.sh
 
-# Source toggle system
+# Source toggle system (silently)
 if [[ -f "${HOME}/claude-setup/claude-toggle.sh" ]]; then
-    source "${HOME}/claude-setup/claude-toggle.sh"
+    source "${HOME}/claude-setup/claude-toggle.sh" >/dev/null 2>&1
 fi
 
 # Configuration
@@ -132,9 +132,14 @@ _claude_load_profiles() {
 
         local profile_name=$(basename "$profile_file" .json)
 
-        # Generate short command name (first 2 chars after 'c')
-        # e.g., profile-a -> cpa, profile-b -> cpb, my-custom -> cmy
-        local short_name=$(echo "$profile_name" | sed 's/-//g' | cut -c1-2)
+        # Generate short command name with special cases
+        local short_name=""
+        case "$profile_name" in
+            "genai-studio") short_name="gs" ;;
+            "dhp-opus") short_name="dh" ;;
+            "my-custom") short_name="my" ;;
+            *) short_name=$(echo "$profile_name" | sed 's/-//g' | cut -c1-2) ;;
+        esac
         local cmd_name="c${short_name}"
         local loop_cmd_name="l${cmd_name}"
 

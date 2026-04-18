@@ -75,6 +75,35 @@ _claude_toggle_init_rules() {
     echo "Rules directory initialized ($(find "$CLAUDE_RULES_TARGET" -type l | wc -l | xargs) symlinks created)"
 }
 
+# First-time initialization: convert to file symlinks and disable everything
+_claude_toggle_first_time_init() {
+    # Convert directory symlink to file symlinks (if needed)
+    _claude_toggle_init_rules >/dev/null 2>&1
+
+    # Disable everything
+    _claude_toggle_disable_all_rules >/dev/null 2>&1
+
+    # Create marker file
+    touch "$HOME/.claude/.toggle-initialized"
+
+    # Show message (only in interactive shells)
+    if [[ -t 0 ]]; then
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "  Claude Toggle Initialized"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "  All skills and rules are DISABLED by default."
+        echo ""
+        echo "  To enable skills/rules:"
+        echo "    claude-toggle ui       # Interactive selection"
+        echo "    claude-toggle list     # View current state"
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+    fi
+}
+
 # Get state variable name for current profile
 # Optional parameter: profile (if not provided, will detect)
 _claude_toggle_get_rules_var() {
@@ -555,10 +584,21 @@ _claude_toggle_ui_rules_fzf() {
 
     if [[ $changes_made == false ]]; then
         echo "No changes made."
+    else
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "  ⚠️  IMPORTANT: Restart Claude Code for changes to take effect"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "  Claude Code caches skills/rules at startup."
+        echo "  To see your changes:"
+        echo ""
+        echo "    1. Exit Claude (Ctrl+D or /exit)"
+        echo "    2. Start new session: cgs"
+        echo ""
     fi
 
     echo ""
-    read -p "Press Enter to continue..."
 }
 
 # FZF-based UI - Skills selection with multi-select
@@ -661,10 +701,21 @@ _claude_toggle_ui_skills_fzf() {
 
     if [[ $changes_made == false ]]; then
         echo "No changes made."
+    else
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "  ⚠️  IMPORTANT: Restart Claude Code for changes to take effect"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "  Claude Code caches skills/rules at startup."
+        echo "  To see your changes:"
+        echo ""
+        echo "    1. Exit Claude (Ctrl+D or /exit)"
+        echo "    2. Start new session: cgs"
+        echo ""
     fi
 
     echo ""
-    read -p "Press Enter to continue..."
 }
 
 # Dialog-based UI - Category selection
@@ -791,7 +842,6 @@ _claude_toggle_ui_rules_dialog() {
         fi
 
         echo ""
-        read -p "Press Enter to continue..."
     fi
 }
 
@@ -893,7 +943,6 @@ _claude_toggle_ui_skills_dialog() {
         fi
 
         echo ""
-        read -p "Press Enter to continue..."
     fi
 }
 
@@ -983,6 +1032,18 @@ _claude_toggle_apply_selection() {
 
     if [[ "$changes_made" == false ]]; then
         echo "No changes made."
+    else
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "  ⚠️  IMPORTANT: Restart Claude Code for changes to take effect"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "  Claude Code caches skills/rules at startup."
+        echo "  To see your changes:"
+        echo ""
+        echo "    1. Exit Claude (Ctrl+D or /exit)"
+        echo "    2. Start new session: cgs"
+        echo ""
     fi
 }
 
@@ -1177,14 +1238,12 @@ _claude_toggle_ui_rules_select() {
                     fi
 
                     echo ""
-                    read -p "Press Enter to continue..."
                     return
                     ;;
                 'q'|'Q') # Quit without saving
                     clear
                     echo "Cancelled - no changes applied."
                     echo ""
-                    read -p "Press Enter to continue..."
                     return
                     ;;
             esac
@@ -1306,14 +1365,12 @@ _claude_toggle_ui_skills_select() {
                     fi
 
                     echo ""
-                    read -p "Press Enter to continue..."
                     return
                     ;;
                 'q'|'Q') # Quit without saving
                     clear
                     echo "Cancelled - no changes applied."
                     echo ""
-                    read -p "Press Enter to continue..."
                     return
                     ;;
             esac
@@ -1442,6 +1499,7 @@ EOF
 # Export functions for use in subshells
 export -f _claude_toggle_detect_profile
 export -f _claude_toggle_init_rules
+export -f _claude_toggle_first_time_init
 export -f _claude_toggle_get_rules_var
 export -f _claude_toggle_get_skills_var
 export -f _claude_toggle_is_rule_disabled
@@ -1463,8 +1521,16 @@ export -f _claude_toggle_ui_rules_select
 export -f _claude_toggle_ui_skills_select
 export -f claude-toggle
 
-# Initialize: disable all rules on session startup (run once per session)
+# Initialize: convert directory symlink to file symlinks on session startup (run once per session)
+# This preserves enabled state while allowing toggle control
 if [[ -z "$CLAUDE_TOGGLE_INITIALIZED" ]]; then
     export CLAUDE_TOGGLE_INITIALIZED=1
-    _claude_toggle_disable_all_rules
+
+    # First-time initialization: disable everything
+    if [[ ! -f "$HOME/.claude/.toggle-initialized" ]]; then
+        _claude_toggle_first_time_init
+    else
+        # Subsequent shells: just ensure rules directory is initialized
+        _claude_toggle_init_rules
+    fi
 fi

@@ -1,0 +1,76 @@
+# Parallel Pre-Push Verification (Fast Approach)
+
+Before pushing changes, run ALL pre-push checks in parallel for faster feedback:
+
+## When to Use
+
+- Multiple independent checks to run (test, lint, build)
+- Want faster verification feedback
+- CI/CD has parallel pipelines and you want local parity
+- Working on larger projects with longer check times
+
+## Workflow
+
+1. Code quality checks (MANDATORY - run first):
+   [ ] Remove trailing whitespace: git diff --check
+   [ ] Remove unused imports (linter will catch remaining)
+   [ ] Apply team conventions (?? not ||, absolute imports, no TODOs)
+
+2. Identify language-specific checks for your project:
+
+   JavaScript/TypeScript:
+   - npm test
+   - npm run lint
+   - npm run build
+
+   Python:
+   - pytest
+   - ruff check
+   - ruff format --check
+
+   Rust:
+   - cargo test
+   - cargo clippy
+   - cargo build --release
+
+   Go:
+   - go test ./...
+   - golangci-lint run
+   - go build
+
+3. Spawn parallel Bash tool calls (run_in_background: true):
+   - Launch one Bash call per independent check
+   - Use run_in_background: true for concurrent execution
+   - Example: spawn npm test, npm run lint, npm run build simultaneously
+
+4. Monitor all background tasks:
+   - Use TaskOutput to check status of each task
+   - When ANY task fails:
+     - STOP remaining tasks immediately (TaskStop if needed)
+     - Analyze failure output
+     - Fix the issue
+     - Restart from step 3
+   - Success: ALL tasks complete successfully
+
+5. Push only after ALL checks pass
+
+## Benefits
+
+- 3x faster verification (test+lint+build in parallel vs sequential)
+- Immediate failure detection
+- Time savings on every push
+- Better developer experience
+
+## Fallback
+
+For simple/single-check scenarios or when parallelism adds overhead, use sequential:
+promptbank/testing/pre-push-checklist.txt
+
+## Example (JavaScript/TypeScript)
+
+Spawn three parallel tasks:
+- Task 1: npm test (run_in_background: true)
+- Task 2: npm run lint (run_in_background: true)
+- Task 3: npm run build (run_in_background: true)
+
+Wait for all, fix if any fail, then push.

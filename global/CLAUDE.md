@@ -12,16 +12,16 @@
 
 ## Quick Reference
 
-This file provides essential cross-cutting concerns. Detailed rules are in `global/rules/`:
+This file provides essential cross-cutting concerns. Detailed rules are organized by category:
 
-- **Core**: `rules/core/` - Working philosophy, instructions, library usage
-- **Code Quality**: `rules/code-quality/` - AI attribution, commenting, team conventions, clean code
-- **Testing**: `rules/testing/` - Pre-push verification, unit tests, test organization
-- **Git**: `rules/git/` - Commit standards, safety, PR reviews, version management
-- **Deployment**: `rules/deployment/` - GitHub Actions, ECS deployment flow
-- **Bug Management**: `rules/bug-management/` - Bug resolution process, database
-- **Workflow**: `rules/workflow/` - Task completion, SonarQube, task tool
-- **Tech-Specific**: `rules/tech-specific/` - Tailwind, Python, Design context
+- **Core** - Working philosophy, instructions, library usage
+- **Code Quality** - AI attribution, commenting, team conventions, clean code
+- **Testing** - Pre-push verification, unit tests, test organization
+- **Git** - Commit standards, safety, PR reviews, version management
+- **Deployment** - GitHub Actions, ECS deployment flow
+- **Bug Management** - Bug resolution process, database
+- **Workflow** - Task completion, SonarQube, task tool
+- **Tech-Specific** - Tailwind, Python, Design context
 
 ---
 
@@ -77,6 +77,6 @@ gh run watch   # Monitor until ALL pipelines pass
 
 ## See Also
 
-- **Detailed Rules**: `global/rules/` directory
+- **Detailed Rules**: Global rules directory (toggle-controlled)
 - **Promptbank**: Use `pb` command for common patterns
 - **Skills**: `.agents/skills/` for specialized knowledge

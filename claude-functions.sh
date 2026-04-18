@@ -138,3 +138,13 @@ sync_skills() {
 
     return 0
 }
+
+# claude_tokens() - Display token usage for current/recent Claude session
+# Can be called anytime during or after a session
+# Usage: claude_tokens or ct (alias)
+claude_tokens() {
+    ~/claude-setup/scripts/print-token-usage.sh "$@"
+}
+
+# Short alias for quick access
+alias ct='claude_tokens'

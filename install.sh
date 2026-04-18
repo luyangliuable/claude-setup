@@ -27,19 +27,20 @@ if [[ ! -f "$ZSHRC" ]]; then
     exit 1
 fi
 
-# Check if already sourced
-if grep -q "claude-profiles.sh" "$ZSHRC" 2>/dev/null; then
-    echo "[OK] claude-profiles.sh already sourced in .zshrc"
+# Add claude-setup to .zshrc
+echo ""
+echo "Configuring .zshrc..."
+
+# Check if already configured in .zshrc
+if grep -q "claude-setup/claude-profiles.sh" "$ZSHRC" 2>/dev/null; then
+    echo "[OK] Claude setup already configured in .zshrc"
 else
-    echo ""
-    echo "Adding claude-profiles.sh to .zshrc..."
-
-    # Add source line to .zshrc
+    echo "Adding claude-setup to .zshrc..."
     echo "" >> "$ZSHRC"
-    echo "# Claude Code profile management" >> "$ZSHRC"
+    echo "# Claude Code setup" >> "$ZSHRC"
     echo "source ${INSTALL_DIR}/claude-profiles.sh" >> "$ZSHRC"
-
-    echo "[OK] Added to .zshrc"
+    echo "source ${INSTALL_DIR}/claude-functions.sh" >> "$ZSHRC"
+    echo "[OK] Added claude-setup to .zshrc"
 fi
 
 # Check for environment variables
@@ -83,28 +84,40 @@ else
     echo "⚠  Warning: No skills directory found"
 fi
 
+# Setup CLAUDE.md symlink
+echo ""
+echo "Setting up CLAUDE.md symlink..."
+if [[ -L "${HOME}/CLAUDE.md" ]]; then
+    echo "[OK] CLAUDE.md symlink already exists"
+elif [[ -f "${HOME}/CLAUDE.md" ]]; then
+    echo "⚠  Warning: CLAUDE.md exists as a regular file (not a symlink)"
+    echo "  Move it and rerun install if you want to use the global version"
+else
+    ln -sf "${INSTALL_DIR}/global/CLAUDE.md" "${HOME}/CLAUDE.md"
+    echo "[OK] Created CLAUDE.md symlink"
+fi
+
 # Setup global rules symlink
 echo ""
 echo "Setting up global rules..."
 "${INSTALL_DIR}/setup-rules.sh"
 
-# Load profiles
+# Sync skills
 echo ""
-echo "Loading profiles..."
-source "${INSTALL_DIR}/claude-profiles.sh"
+echo "Syncing skills..."
+"${INSTALL_DIR}/sync-skills.sh"
 
 # List available profiles
 echo ""
 echo "Available profiles:"
-claude-profile list | grep -E "^  -" || echo "  (none)"
+ls -1 "${INSTALL_DIR}/profiles" 2>/dev/null | grep '\.json$' | sed 's/\.json$//' | sed 's/^/  - /' || echo "  (none)"
 
 echo ""
 echo "=== Installation Complete ==="
 echo ""
 echo "Next steps:"
 echo "  1. Reload your shell: source ~/.zshrc"
-echo "  2. Try a command: c --version"
-echo "  3. List profiles: claude-profile list"
-echo "  4. Add custom profile: claude-profile add my-custom"
+echo "  2. Try a command: claude-profile list"
+echo "  3. Test a profile: cgs (GenAI Studio)"
 echo ""
 echo "For more information, see: ${INSTALL_DIR}/README.md"

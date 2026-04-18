@@ -1,8 +1,16 @@
 Pre-push verification checklist:
 
+## Performance Option: Run Checks in Parallel
+
+For faster verification, use: promptbank/testing/parallel-pre-push-checks.txt
+This spawns independent tasks for test/lint/build simultaneously (3x faster).
+
+---
+
 Code Quality (All Modified/Added Files):
 [ ] No trailing whitespace (git diff --check)
 [ ] No unused imports (linter catches this)
+[ ] No local-only config files staged (use: promptbank/git/local-only-files-check.txt)
 [ ] Conventions followed:
     [ ] Use ?? instead of || for defaults
     [ ] Absolute imports (not relative)

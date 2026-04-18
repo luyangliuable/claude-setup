@@ -1,16 +1,22 @@
 #!/bin/bash
-# sync-skills.sh - Sync all skills from .agents/skills/ to .claude/skills/
+# sync-skills.sh - Sync all skills from .agents/skills/ to ~/.claude/skills/
 # Usage: ./sync-skills.sh
 
 set -e
 
+SOURCE_DIR="${HOME}/claude-setup/.agents/skills"
+TARGET_DIR="${HOME}/.claude/skills"
+
 echo "Syncing skills from .agents/skills/ to .claude/skills/..."
 echo ""
 
-cd ~/claude-setup
+# Create target directory if it doesn't exist
+mkdir -p "$TARGET_DIR"
+
+cd "$SOURCE_DIR"
 
 count=0
-for skill_dir in .agents/skills/*/; do
+for skill_dir in */; do
     if [ -d "$skill_dir" ]; then
         skill_name=$(basename "$skill_dir")
 
@@ -21,15 +27,13 @@ for skill_dir in .agents/skills/*/; do
         fi
 
         # Remove existing file/directory if it exists
-        if [ -e ".claude/skills/$skill_name" ]; then
-            rm -rf ".claude/skills/$skill_name"
+        if [ -e "$TARGET_DIR/$skill_name" ]; then
+            rm -rf "$TARGET_DIR/$skill_name"
         fi
 
         # Create symlink
         echo "→ $skill_name"
-        cd .claude/skills
-        ln -sf ../../.agents/skills/"$skill_name" "$skill_name"
-        cd ~/claude-setup
+        ln -sf "$SOURCE_DIR/$skill_name" "$TARGET_DIR/$skill_name"
 
         ((count++))
     fi
@@ -38,5 +42,5 @@ done
 echo ""
 echo "✅ Synced $count skills successfully!"
 echo ""
-echo "Skills are now available in .claude/skills/"
-ls -la .claude/skills/ | grep '^l'
+echo "Skills are now available in ~/.claude/skills/"
+ls -la "$TARGET_DIR" | grep '^l'

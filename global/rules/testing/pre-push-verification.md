@@ -2,6 +2,14 @@
 
 **MANDATORY: Before pushing any changes, run ALL code quality and language-specific checks:**
 
+## Performance Option: Run Checks in Parallel
+
+For faster verification, use: `promptbank/testing/parallel-pre-push-checks.txt`
+
+This spawns independent background tasks for test/lint/build simultaneously, providing 3x faster feedback. Use for projects with longer check times or when you want local parity with parallel CI/CD pipelines.
+
+---
+
 ## Code Quality Checks (MANDATORY - ALL Languages)
 
 **Before running language-specific checks, ensure:**
